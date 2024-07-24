@@ -39,15 +39,36 @@ sealed class Route {
     data class Number(val value: Int) : Route()
 }
 
+
+@Composable
+@Preview
+fun Test2() {
+    var showContent by remember { mutableStateOf(false) }
+
+    Button(onClick = { showContent = !showContent }) {
+        Text("Click me!")
+    }
+    AnimatedVisibility(showContent) {
+        val greeting = remember { Greeting().greet() }
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(painterResource(Res.drawable.compose_multiplatform), null)
+            Text("Compose: $greeting")
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App() {
+
     val navController = rememberNavController()
     MaterialTheme {
         NavHost(navController = navController, startDestination = Route.Home) {
             composable<Route.Home> {
-                var showContent by remember { mutableStateOf(false) }
                 Column(
                     Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -59,19 +80,8 @@ fun App() {
                             }) { Text("Route $i") }
                         }
                     }
-                    Button(onClick = { showContent = !showContent }) {
-                        Text("Click me!")
-                    }
-                    AnimatedVisibility(showContent) {
-                        val greeting = remember { Greeting().greet() }
-                        Column(
-                            Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(painterResource(Res.drawable.compose_multiplatform), null)
-                            Text("Compose: $greeting")
-                        }
-                    }
+
+                    Test2()
                 }
             }
 
@@ -107,22 +117,16 @@ fun App() {
                             "Number: ${route.value}",
                             style = MaterialTheme.typography.displayLarge
                         )
-                        Button(onClick = { showContent = !showContent }) {
-                            Text("Click me!")
-                        }
-                        AnimatedVisibility(showContent) {
-                            val greeting = remember { Greeting().greet() }
-                            Column(
-                                Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(painterResource(Res.drawable.compose_multiplatform), null)
-                                Text("Compose: $greeting")
-                            }
-                        }
+                        Test2()
                     }
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun Wtf() {
+
 }
