@@ -5,7 +5,6 @@ import NumberScreen
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -44,13 +43,13 @@ class MainActivity : ComponentActivity() {
 @Preview(showSystemUi = false, name = "Preview", group = "A")
 @Composable
 fun Screen1() {
-    NumberScreen(goBack = { /*TODO*/ }, number = 42)
+    NumberScreen(goUp = { /*TODO*/ }, number = 42)
 }
 
 
 @Preview(showSystemUi = false, name = "Preview", group = "A")
 @Composable
 fun Screen2() {
-    NumberScreen(goBack = { /*TODO*/ }, number = 23, visible = true)
+    NumberScreen(goUp = { /*TODO*/ }, number = 23, visible = true)
 }
 

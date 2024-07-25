@@ -1,11 +1,9 @@
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.PathEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -13,12 +11,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOut
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -27,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,14 +29,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -58,9 +48,7 @@ import cafe.adriel.voyager.core.stack.StackEvent
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
-import cafe.adriel.voyager.transitions.FadeTransition
 import cafe.adriel.voyager.transitions.ScreenTransition
-import cafe.adriel.voyager.transitions.SlideTransition
 import kotlinx.serialization.Serializable
 
 
@@ -174,12 +162,93 @@ data class NumberRoute(val number: Int) : Screen { //}, ScreenTransition by Slid
     override fun Content() {
         val navigator = LocalNavigator.current
         val visible = navigator?.lastItemOrNull is NumberRoute
-        NumberScreen(goBack = { navigator?.pop() }, number = number, visible = visible)
+        NumberScreen(goUp = { navigator?.pop() }, number = number, visible = visible)
     }
 
 
 }
 
+
+@Composable
+fun ComposeNavigation() {
+    val navController = rememberNavController()
+
+//    BackHandler(backHandlingEnabled) {
+    NavHost(navController = navController, startDestination = Route.Home) {
+        composable<Route.Home>(
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }) {
+            HomeScreen(navigateNumber = { navController.navigate(Route.Number(it)) })
+            HandleBack(navController)
+        }
+
+        composable<Route.Number>(
+            enterTransition = {
+
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = Easing.enterDuration,
+                        easing = Easing.emphasizedDecelerate
+                    )
+                ) + slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(
+                        durationMillis = Easing.enterDuration,
+                        easing = Easing.emphasizedDecelerate
+                    )
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        durationMillis = Easing.exitDuration,
+                        easing = Easing.emphasizedAccelerate
+                    )
+                ) + slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(
+                        durationMillis = Easing.exitDuration,
+                        easing = Easing.emphasizedAccelerate
+                    )
+                )
+            },
+        ) { backStackEntry ->
+            val route: Route.Number = backStackEntry.toRoute()
+            HandleBack(navController)
+            NumberScreen(
+                {
+                    if (!duringScreenTransition(navController)) {
+                        navController.navigateUp()
+                    }
+                },
+                route.value
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalVoyagerApi::class)
+@Composable
+fun VoyagerNavigation() {
+    Navigator(
+        HomeRoute(),
+        disposeBehavior = NavigatorDisposeBehavior(disposeSteps = false)
+    ) { navigator ->
+        ScreenTransition(
+            navigator = navigator,
+            transition = {
+                fadeIn(
+                    initialAlpha = 0.99f,
+                    animationSpec = tween()
+                ) togetherWith fadeOut(targetAlpha = 0.99f)
+            },
+//                enterTransition = {ContentTransform()},
+//                exitTransition = {ExitTransition.None},
+            disposeScreenAfterTransitionEnd = true,
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalVoyagerApi::class)
 @Composable
@@ -187,70 +256,8 @@ data class NumberRoute(val number: Int) : Screen { //}, ScreenTransition by Slid
 fun App() {
 
     MaterialTheme {
-        Navigator(
-            HomeRoute(),
-            disposeBehavior = NavigatorDisposeBehavior(disposeSteps = false)
-        ) { navigator ->
-            ScreenTransition(
-                navigator = navigator,
-                transition = { fadeIn(initialAlpha = 0.99f, animationSpec = ) togetherWith fadeOut(targetAlpha = 0.99f) },
-//                enterTransition = {ContentTransform()},
-//                exitTransition = {ExitTransition.None},
-                disposeScreenAfterTransitionEnd = true,
-            )
-        }
-//        { navigator ->
-//            FadeTransition(
-//                navigator = navigator,
-//                disposeScreenAfterTransitionEnd = true
-//            )
-//        }
-//        val navController = rememberNavController()
-//
-//        NavHost(navController = navController, startDestination = Route.Home) {
-//            composable<Route.Home>(
-//                enterTransition = { EnterTransition.None },
-//                exitTransition = { ExitTransition.None }) {
-//
-//            }
-//
-//
-//
-//            composable<Route.Number>(
-//                enterTransition = {
-//
-//                    fadeIn(
-//                        animationSpec = tween(
-//                            durationMillis = Easing.enterDuration,
-//                            easing = Easing.emphasizedDecelerate
-//                        )
-//                    ) + slideIntoContainer(
-//                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
-//                        animationSpec = tween(
-//                            durationMillis = Easing.enterDuration,
-//                            easing = Easing.emphasizedDecelerate
-//                        )
-//                    )
-//                },
-//                exitTransition = {
-//                    fadeOut(
-//                        animationSpec = tween(
-//                            durationMillis = Easing.exitDuration,
-//                            easing = Easing.emphasizedAccelerate
-//                        )
-//                    ) + slideOutOfContainer(
-//                        towards = AnimatedContentTransitionScope.SlideDirection.End,
-//                        animationSpec = tween(
-//                            durationMillis = Easing.exitDuration,
-//                            easing = Easing.emphasizedAccelerate
-//                        )
-//                    )
-//                },
-//            ) { backStackEntry ->
-//                val route: Route.Number = backStackEntry.toRoute()
-//                NumberScreen({ navController.popBackStack() }, route.value)
-//            }
-//        }
+        ComposeNavigation()
+//        VoyagerNavigation()
     }
 }
 
@@ -284,12 +291,29 @@ fun HomeScreen(navigateNumber: (number: Int) -> Unit) {
     }
 }
 
+fun duringScreenTransition(navHostController: NavHostController): Boolean {
+    val visibleDestination = navHostController.visibleEntries.value.firstOrNull()?.destination
+    val currentDestination = navHostController.currentDestination
+
+    println("duringScreenTransition ${navHostController.visibleEntries.value}")
+    println("duringScreenTransition visible: $visibleDestination")
+    println("duringScreenTransition current: $currentDestination")
+
+    return visibleDestination !== currentDestination
+}
+
+
+/**
+ * Overrides back button handler so that it can't be triggered during screen transition.
+ */
+@Composable
+expect fun HandleBack(navHostController: NavHostController)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NumberScreen(goBack: () -> Unit, number: Int, visible: Boolean = true) {
+fun NumberScreen(goUp: () -> Unit, number: Int, visible: Boolean = true) {
     val animationState =
-        remember { MutableTransitionState(false) }
+        remember { MutableTransitionState(true) }
     val stateName = when {
         animationState.isIdle && animationState.currentState -> "Visible"
         !animationState.isIdle && animationState.currentState -> "Disappearing"
@@ -316,12 +340,8 @@ fun NumberScreen(goBack: () -> Unit, number: Int, visible: Boolean = true) {
                 CenterAlignedTopAppBar(
                     title = { Text("Number $number") },
                     navigationIcon = {
-                        var clicked by remember { mutableStateOf(false) }
                         IconButton(onClick = {
-                            if (!clicked) {
-                                println("Wtf"); goBack()
-                                clicked = true
-                            }
+                            goUp()
                         }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
