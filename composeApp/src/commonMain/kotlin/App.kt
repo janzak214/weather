@@ -92,8 +92,8 @@ object Easing {
 @Preview
 fun App() {
 
-    val navController = rememberNavController()
     MaterialTheme {
+        val navController = rememberNavController()
 
         NavHost(navController = navController, startDestination = Route.Home) {
             composable<Route.Home>(
@@ -177,35 +177,39 @@ fun NumberScreen(goBack: () -> Unit, number: Int) {
         else -> "Appearing"
     }
 
-    AnimatedVisibility(
-        visibleState = animationState,
-        enter = EnterTransition.None,
-        exit = ExitTransition.None
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Hello $stateName") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            if (animationState.isIdle && animationState.currentState) {
-                                println("Wtf"); goBack()
-                            }
-                        }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "Go back"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                )
-            }
-        ) { padding ->
+    LaunchedEffect(stateName) {
+        println("State: $stateName")
+    }
 
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Hello $stateName") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (animationState.isIdle && animationState.currentState) {
+                            println("Wtf"); goBack()
+                        }
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "Go back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+            )
+        }
+    ) { padding ->
+        AnimatedVisibility(
+            visibleState = animationState,
+            enter = EnterTransition.None,
+            exit = ExitTransition.None
+        ) {
             Column(
                 Modifier.fillMaxWidth().padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally
