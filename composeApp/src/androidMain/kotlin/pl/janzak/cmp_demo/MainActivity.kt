@@ -51,6 +51,6 @@ fun Screen1() {
 @Preview(showSystemUi = false, name = "Preview", group = "A")
 @Composable
 fun Screen2() {
-    NumberScreen(goBack = { /*TODO*/ }, number = 23)
+    NumberScreen(goBack = { /*TODO*/ }, number = 23, visible = true)
 }
 
