@@ -1,7 +1,6 @@
-import android.os.Bundle
+package navigation
+
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 
 @Composable

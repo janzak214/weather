@@ -1,0 +1,104 @@
+package ui.screens
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NumberScreen(goUp: () -> Unit, number: Int, visible: Boolean = true) {
+    val animationState =
+        remember { MutableTransitionState(true) }
+    val stateName = when {
+        animationState.isIdle && animationState.currentState -> "Visible"
+        !animationState.isIdle && animationState.currentState -> "Disappearing"
+        animationState.isIdle && !animationState.currentState -> "Invisible"
+        else -> "Appearing"
+    }
+
+    LaunchedEffect(stateName) {
+        println("State: $stateName")
+    }
+
+    LaunchedEffect(visible) {
+        println("Visible: $visible")
+        animationState.targetState = visible
+    }
+
+    AnimatedVisibility(
+        visibleState = animationState,
+        enter = EnterTransition.None,
+        exit = ExitTransition.None,
+    ) {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Number $number") },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            goUp()
+                        }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Go back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut())
+                )
+            }
+        ) { padding ->
+
+            Column(
+                Modifier.fillMaxWidth().padding(padding)
+                    .animateEnterExit(
+                        enter = slideInHorizontally { it },
+                        exit = slideOutHorizontally { it },
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Number: $number",
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier.animateEnterExit(
+                        enter = scaleIn(
+                            spring(stiffness = Spring.StiffnessLow)
+                        ),
+                        exit = scaleOut(spring())
+                    )
+                )
+            }
+        }
+    }
+}
