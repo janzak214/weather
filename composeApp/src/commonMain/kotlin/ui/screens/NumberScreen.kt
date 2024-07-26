@@ -1,8 +1,11 @@
 package ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -44,9 +47,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun NumberScreen(goUp: () -> Unit, number: Int, visible: Boolean = true) {
+fun NumberScreen(
+    goUp: () -> Unit,
+    number: Int,
+    visible: Boolean = true,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val animationState =
         remember { MutableTransitionState(true) }
     val stateName = when {
@@ -70,88 +79,102 @@ fun NumberScreen(goUp: () -> Unit, number: Int, visible: Boolean = true) {
         enter = EnterTransition.None,
         exit = ExitTransition.None,
     ) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("Card $number") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            goUp()
-                        }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "Go back"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton({}) {
-                            Icon(Icons.Default.Edit, "Edit")
-                        }
-                        IconButton({}) {
-                            Icon(Icons.Default.MoreVert, "More")
-                        }
-                    },
-                    modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut())
-                )
-            }
-        ) { padding ->
 
-            Column(
-                Modifier.fillMaxSize().padding(padding)
-                    .animateEnterExit(
-                        enter = slideInHorizontally { it },
-                        exit = slideOutHorizontally { it },
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Card(
-                    modifier = Modifier.padding(8.dp).heightIn(0.dp, 200.dp),
-                    colors = CardDefaults.elevatedCardColors(),
-                    elevation = CardDefaults.elevatedCardElevation(2.dp),
-                    shape = CardDefaults.elevatedShape,
+        with(sharedTransitionScope) {
+            Scaffold(
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = { Text("Card $number") },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                goUp()
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    "Go back"
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton({}) {
+                                Icon(Icons.Default.Edit, "Edit")
+                            }
+                            IconButton({}) {
+                                Icon(Icons.Default.MoreVert, "More")
+                            }
+                        },
+                        modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut())
+                    )
+                }
+            ) { padding ->
+
+                Column(
+                    Modifier.fillMaxSize().padding(padding)
+                        .animateEnterExit(
+                            enter = slideInHorizontally { it },
+                            exit = slideOutHorizontally { it },
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.widthIn(0.dp, 400.dp).fillMaxSize().padding(32.dp)
-                    ) {
-                        val buttonModifier = Modifier.size(48.dp)
-                        val buttonIconModifier = Modifier
-
-                        IconButton(
-                            {},
-                            modifier = buttonModifier,
-                            colors = IconButtonDefaults.filledIconButtonColors()
-                        ) {
-                            Icon(
-                                Icons.Default.Remove,
-                                contentDescription = "Decrement",
-                                modifier = buttonIconModifier,
-                            )
-                        }
-                        Text(
-                            "$number",
-                            style = MaterialTheme.typography.displayLarge,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.animateEnterExit(
-                                enter = scaleIn(
-                                    spring(stiffness = Spring.StiffnessLow)
+                    Card(
+                        modifier = Modifier.padding(8.dp).heightIn(0.dp, 200.dp).then(
+                            Modifier.Companion.sharedElement(
+                                sharedTransitionScope.rememberSharedContentState(
+                                    key = "counter-card-$number"
                                 ),
-                                exit = scaleOut(spring())
-                            ).weight(1f)
-                        )
-                        IconButton(
-                            {},
-                            modifier = buttonModifier,
-                            colors = IconButtonDefaults.filledIconButtonColors()
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Increment",
-                                modifier = buttonIconModifier,
+                                animatedVisibilityScope = animatedVisibilityScope,
                             )
+                        ),
+                        colors = CardDefaults.elevatedCardColors(),
+                        elevation = CardDefaults.elevatedCardElevation(2.dp),
+                        shape = CardDefaults.elevatedShape,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier.widthIn(0.dp, 400.dp).fillMaxSize().padding(32.dp)
+                        ) {
+                            val buttonModifier = Modifier.size(48.dp)
+                            val buttonIconModifier = Modifier
+
+                            IconButton(
+                                {},
+                                modifier = buttonModifier,
+                                colors = IconButtonDefaults.filledIconButtonColors()
+                            ) {
+                                Icon(
+                                    Icons.Default.Remove,
+                                    contentDescription = "Decrement",
+                                    modifier = buttonIconModifier,
+                                )
+                            }
+                            Text(
+                                "$number",
+                                style = MaterialTheme.typography.displayLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.Companion.sharedElement(
+                                    sharedTransitionScope.rememberSharedContentState(
+                                        key = "counter-text-$number"
+                                    ), animatedVisibilityScope = animatedVisibilityScope
+                                ).animateEnterExit(
+                                    enter = scaleIn(
+                                        spring(stiffness = Spring.StiffnessLow)
+                                    ),
+                                    exit = scaleOut(spring())
+                                ).weight(1f)
+                            )
+                            IconButton(
+                                {},
+                                modifier = buttonModifier,
+                                colors = IconButtonDefaults.filledIconButtonColors()
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Increment",
+                                    modifier = buttonIconModifier,
+                                )
+                            }
                         }
                     }
                 }

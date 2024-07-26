@@ -3,6 +3,8 @@ package navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,59 +26,68 @@ sealed class Route {
     data class Number(val value: Int) : Route()
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Route.Home) {
-        composable<Route.Home>(
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None }) {
-            HomeScreen(navigateNumber = { navController.navigate(Route.Number(it)) })
-            HandleBack(navController)
-        }
-
-        composable<Route.Number>(
-            enterTransition = {
-
-                fadeIn(
-                    animationSpec = tween(
-                        durationMillis = Easing.enterDuration,
-                        easing = Easing.emphasizedDecelerate
-                    )
-                ) + slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                    animationSpec = tween(
-                        durationMillis = Easing.enterDuration,
-                        easing = Easing.emphasizedDecelerate
-                    )
+    SharedTransitionLayout {
+        NavHost(navController = navController, startDestination = Route.Home) {
+            composable<Route.Home>(
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None }) {
+                HomeScreen(
+                    navigateNumber = { navController.navigate(Route.Number(it)) },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@composable,
                 )
-            },
-            exitTransition = {
-                fadeOut(
-                    animationSpec = tween(
-                        durationMillis = Easing.exitDuration,
-                        easing = Easing.emphasizedAccelerate
+                HandleBack(navController)
+            }
+
+            composable<Route.Number>(
+                enterTransition = {
+
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = Easing.enterDuration,
+                            easing = Easing.emphasizedDecelerate
+                        )
+                    ) + slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(
+                            durationMillis = Easing.enterDuration,
+                            easing = Easing.emphasizedDecelerate
+                        )
                     )
-                ) + slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    animationSpec = tween(
-                        durationMillis = Easing.exitDuration,
-                        easing = Easing.emphasizedAccelerate
-                    )
-                )
-            },
-        ) { backStackEntry ->
-            val route: Route.Number = backStackEntry.toRoute()
-            HandleBack(navController)
-            NumberScreen(
-                {
-                    if (!duringScreenTransition(navController)) {
-                        navController.navigateUp()
-                    }
                 },
-                route.value
-            )
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(
+                            durationMillis = Easing.exitDuration,
+                            easing = Easing.emphasizedAccelerate
+                        )
+                    ) + slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(
+                            durationMillis = Easing.exitDuration,
+                            easing = Easing.emphasizedAccelerate
+                        )
+                    )
+                },
+            ) { backStackEntry ->
+                val route: Route.Number = backStackEntry.toRoute()
+                HandleBack(navController)
+                NumberScreen(
+                    goUp = {
+                        if (!duringScreenTransition(navController)) {
+                            navController.navigateUp()
+                        }
+                    },
+                    number = route.value,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@composable,
+                )
+            }
         }
     }
 }

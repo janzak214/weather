@@ -1,5 +1,8 @@
 package ui.screens
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +31,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(navigateNumber: (number: Int) -> Unit) {
+fun HomeScreen(
+    navigateNumber: (number: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
             title = { Text("Counters") },
@@ -52,25 +59,45 @@ fun HomeScreen(navigateNumber: (number: Int) -> Unit) {
     ) { padding ->
         val counters = remember { (1..10).toList() }
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 128.dp),
-            modifier = Modifier.padding(padding).padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(counters) {
-                CounterCard(
-                    "Card $it",
-                    value = it,
-                    onClick = { navigateNumber(it) },
-                )
+        with(sharedTransitionScope) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 128.dp),
+                modifier = Modifier.padding(padding).padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(counters) {
+                    CounterCard(
+                        "Card $it",
+                        value = it,
+                        onClick = { navigateNumber(it) },
+                        modifier = Modifier.Companion.sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(
+                                key = "counter-card-$it"
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                        textModifier = Modifier.Companion.sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(
+                                key = "counter-text-$it"
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun CounterCard(name: String, value: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun CounterCard(
+    name: String,
+    value: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier
+) {
     Card(
         onClick = onClick,
         colors = CardDefaults.elevatedCardColors()
@@ -87,7 +114,7 @@ fun CounterCard(name: String, value: Int, onClick: () -> Unit, modifier: Modifie
                 "$value",
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.CenterHorizontally).alpha(0.7f)
+                modifier = textModifier.align(Alignment.CenterHorizontally).alpha(0.7f)
                     .padding(vertical = 4.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
