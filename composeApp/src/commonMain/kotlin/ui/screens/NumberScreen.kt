@@ -1,5 +1,6 @@
 package ui.screens
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
@@ -7,14 +8,13 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,7 +56,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+)
 @Composable
 fun NumberScreen(
     goUp: () -> Unit,
@@ -120,7 +123,12 @@ fun NumberScreen(
                                     onDismissRequest = { expanded = false }) {
 
                                     DropdownMenuItem(
-                                        text = { Text("Delete") },
+                                        text = {
+                                            Text(
+                                                "Delete",
+                                                style = MaterialTheme.typography.labelLarge
+                                            )
+                                        },
                                         onClick = goUp,
                                         leadingIcon = {
                                             Icon(
@@ -166,9 +174,10 @@ fun NumberScreen(
                         ) {
                             val buttonModifier = Modifier.size(48.dp)
                             val buttonIconModifier = Modifier
+                            var counterValue by remember { mutableIntStateOf((0)) }
 
                             IconButton(
-                                {},
+                                { counterValue-- },
                                 modifier = buttonModifier,
                                 colors = IconButtonDefaults.filledIconButtonColors()
                             ) {
@@ -178,23 +187,33 @@ fun NumberScreen(
                                     modifier = buttonIconModifier,
                                 )
                             }
-                            Text(
-                                "$number",
-                                style = MaterialTheme.typography.displayLarge,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.Companion.sharedElement(
-                                    sharedTransitionScope.rememberSharedContentState(
-                                        key = "counter-text-$number"
-                                    ), animatedVisibilityScope = animatedVisibilityScope
-                                ).animateEnterExit(
-                                    enter = scaleIn(
-                                        spring(stiffness = Spring.StiffnessLow)
-                                    ),
-                                    exit = scaleOut(spring())
-                                ).weight(1f)
-                            )
+                            AnimatedContent(
+                                targetState = counterValue,
+                                transitionSpec = {
+                                    if (targetState > initialState) {
+                                        slideInVertically { height -> height } + fadeIn() togetherWith
+                                                slideOutVertically { height -> -height } + fadeOut()
+                                    } else {
+                                        slideInVertically { height -> -height } + fadeIn() togetherWith
+                                                slideOutVertically { height -> height } + fadeOut()
+                                    }
+                                },
+                            ) { targetState ->
+                                Text(
+                                    "$targetState",
+                                    style = MaterialTheme.typography.displayLarge,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+//                                        .Companion.sharedElement(
+//                                            sharedTransitionScope.rememberSharedContentState(
+//                                                key = "counter-text-$number"
+//                                            ), animatedVisibilityScope = animatedVisibilityScope
+//                                        )
+                                        .weight(1f)
+                                )
+                            }
                             IconButton(
-                                {},
+                                { counterValue++ },
                                 modifier = buttonModifier,
                                 colors = IconButtonDefaults.filledIconButtonColors()
                             ) {
