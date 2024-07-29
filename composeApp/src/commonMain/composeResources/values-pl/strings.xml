@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Demo</string>
+    <string name="main_screen_title">Liczniki</string>
+    <string name="main_screen_create_button">Utwórz nowy licznik</string>
+    <string name="counter_edit_button">Edytuj</string>
+    <string name="counter_menu_more">Więcej</string>
+    <string name="counter_menu_delete">Usuń</string>
+    <string name="counter_dialog_delete_title">Usunąć licznik „%1$s”?</string>
+    <string name="counter_dialog_delete_confirm">Usuń</string>
+    <string name="counter_dialog_delete_cancel">Anuluj</string>
+    <string name="counter_dialog_edit_title">Edytuj nazwę licznika</string>
+    <string name="counter_dialog_edit_text_field_label">Nazwa licznika</string>
+    <string name="counter_dialog_edit_confirm">OK</string>
+    <string name="counter_dialog_edit_cancel">Anuluj</string>
+</resources>

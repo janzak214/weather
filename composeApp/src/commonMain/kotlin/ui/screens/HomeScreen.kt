@@ -30,6 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import resources.Res
+import resources.main_screen_create_button
+import resources.main_screen_title
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -40,7 +44,7 @@ fun HomeScreen(
 ) {
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
-            title = { Text("Counters") },
+            title = { Text(stringResource(Res.string.main_screen_title)) },
             colors = TopAppBarDefaults.topAppBarColors(),
         )
     },
@@ -52,7 +56,7 @@ fun HomeScreen(
             ) {
                 Icon(
                     Icons.Default.Add,
-                    "Create a new counter"
+                    stringResource(Res.string.main_screen_create_button)
                 )
             }
         }

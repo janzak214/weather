@@ -55,6 +55,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import resources.Res
+import resources.counter_edit_button
+import resources.counter_menu_delete
+import resources.counter_menu_more
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
@@ -108,7 +113,7 @@ fun NumberScreen(
                         },
                         actions = {
                             IconButton({}) {
-                                Icon(Icons.Default.Edit, "Edit")
+                                Icon(Icons.Default.Edit, stringResource(Res.string.counter_edit_button))
                             }
 
                             Box(
@@ -116,7 +121,7 @@ fun NumberScreen(
                             ) {
                                 var expanded by remember { mutableStateOf(false) }
                                 IconButton({ expanded = true }) {
-                                    Icon(Icons.Default.MoreVert, "More")
+                                    Icon(Icons.Default.MoreVert, stringResource(Res.string.counter_menu_more))
                                 }
                                 DropdownMenu(
                                     expanded = expanded,
@@ -125,7 +130,7 @@ fun NumberScreen(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                "Delete",
+                                                stringResource(Res.string.counter_menu_delete),
                                                 style = MaterialTheme.typography.labelLarge
                                             )
                                         },

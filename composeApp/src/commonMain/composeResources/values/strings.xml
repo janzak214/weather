@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Demo</string>
+    <string name="main_screen_title">Counters</string>
+    <string name="main_screen_create_button">Create a new counter</string>
+    <string name="counter_edit_button">Edit</string>
+    <string name="counter_menu_more">More</string>
+    <string name="counter_menu_delete">Delete</string>
+    <string name="counter_dialog_delete_title">Delete counter ‘%1$s’?</string>
+    <string name="counter_dialog_delete_confirm">Delete</string>
+    <string name="counter_dialog_delete_cancel">Cancel</string>
+    <string name="counter_dialog_edit_title">Edit counter name</string>
+    <string name="counter_dialog_edit_text_field_label">Counter name</string>
+    <string name="counter_dialog_edit_confirm">OK</string>
+    <string name="counter_dialog_edit_cancel">Cancel</string>
+</resources>

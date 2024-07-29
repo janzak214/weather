@@ -98,3 +98,9 @@ compose.desktop {
         }
     }
 }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "resources"
+    generateResClass = always
+}
