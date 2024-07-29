@@ -22,8 +22,9 @@ interface CounterRepository {
 
     suspend fun incrementCounter(counterId: CounterId)
     suspend fun decrementCounter(counterId: CounterId)
+    suspend fun renameCounter(counterId: CounterId, newName: String)
 
-    fun getCounter(counterId: CounterId): StateFlow<Counter>
+    fun getCounter(counterId: CounterId): StateFlow<Counter?>
     fun getAll(): StateFlow<Map<CounterId, Counter>>
 }
 
@@ -70,9 +71,16 @@ class CounterRepositoryImpl : CounterRepository {
         }
     }
 
-    override fun getCounter(counterId: CounterId): StateFlow<Counter> {
+    override suspend fun renameCounter(counterId: CounterId, newName: String) {
+        _counters.update { state ->
+            val counter = state.data[counterId] ?: throw (CounterNotFound(counterId))
+            state.copy(data = state.data + (counterId to counter.copy(name = newName)))
+        }
+    }
+
+    override fun getCounter(counterId: CounterId): StateFlow<Counter?> {
         return _counters.mapState { state ->
-            state.data[counterId] ?: throw (CounterNotFound(counterId))
+            state.data[counterId]
         }
     }
 

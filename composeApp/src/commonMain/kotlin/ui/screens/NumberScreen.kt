@@ -51,7 +51,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +58,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import model.CounterId
+import model.NumberViewModel
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_delete_cancel
@@ -84,19 +86,19 @@ fun NumberScreen(
     counterId: CounterId,
     visible: Boolean = true,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
-) {
-    val animationState =
-        remember { MutableTransitionState(true) }
-    val stateName = when {
-        animationState.isIdle && animationState.currentState -> "Visible"
-        !animationState.isIdle && animationState.currentState -> "Disappearing"
-        animationState.isIdle && !animationState.currentState -> "Invisible"
-        else -> "Appearing"
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: NumberViewModel = viewModel {
+        NumberViewModel(
+            counterId
+        )
     }
+) {
+    val nullableCounter by viewModel.counter.collectAsStateWithLifecycle(initialValue = null)
+    val animationState =
+        remember { MutableTransitionState(nullableCounter != null) }
 
-    LaunchedEffect(stateName) {
-        println("State: $stateName")
+    LaunchedEffect(nullableCounter != null) {
+        animationState.targetState = nullableCounter != null
     }
 
     LaunchedEffect(visible) {
@@ -107,17 +109,19 @@ fun NumberScreen(
     var deleteDialogVisible by remember { mutableStateOf(false) }
     var editDialogVisible by remember { mutableStateOf(false) }
 
+
     AnimatedVisibility(
         visibleState = animationState,
         enter = EnterTransition.None,
         exit = ExitTransition.None,
     ) {
+        val counter = nullableCounter!!
 
         with(sharedTransitionScope) {
             Scaffold(
                 topBar = {
                     CenterAlignedTopAppBar(
-                        title = { Text("Card $counterId") },
+                        title = { Text(counter.name) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 goUp()
@@ -188,9 +192,10 @@ fun NumberScreen(
                         onConfirm = {
                             deleteDialogVisible = false
                             goUp()
+                            viewModel.delete()
                         },
                         onDismiss = { deleteDialogVisible = false },
-                        name = "name",
+                        name = counter.name,
                         modifier = dialogModifier()
                     )
                 }
@@ -198,10 +203,11 @@ fun NumberScreen(
                 AnimatedVisibility(editDialogVisible) {
                     EditCounterDialog(
                         onConfirm = {
+                            viewModel.rename(it)
                             editDialogVisible = false
                         },
                         onDismiss = { editDialogVisible = false },
-                        name = "name",
+                        name = counter.name,
                         modifier = dialogModifier()
                     )
                 }
@@ -235,10 +241,9 @@ fun NumberScreen(
                         ) {
                             val buttonModifier = Modifier.size(48.dp)
                             val buttonIconModifier = Modifier
-                            var counterValue by remember { mutableIntStateOf((0)) }
 
                             IconButton(
-                                { counterValue-- },
+                                { viewModel.decrement() },
                                 modifier = buttonModifier,
                                 colors = IconButtonDefaults.filledIconButtonColors()
                             ) {
@@ -249,7 +254,7 @@ fun NumberScreen(
                                 )
                             }
                             AnimatedContent(
-                                targetState = counterValue,
+                                targetState = counter.value,
                                 transitionSpec = {
                                     if (targetState > initialState) {
                                         slideInVertically { height -> height } + fadeIn() togetherWith
@@ -268,7 +273,7 @@ fun NumberScreen(
                                 )
                             }
                             IconButton(
-                                { counterValue++ },
+                                { viewModel.increment() },
                                 modifier = buttonModifier,
                                 colors = IconButtonDefaults.filledIconButtonColors()
                             ) {
