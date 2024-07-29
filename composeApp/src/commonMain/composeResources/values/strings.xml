@@ -5,7 +5,8 @@
     <string name="counter_edit_button">Edit</string>
     <string name="counter_menu_more">More</string>
     <string name="counter_menu_delete">Delete</string>
-    <string name="counter_dialog_delete_title">Delete counter ‘%1$s’?</string>
+    <string name="counter_dialog_delete_title">Delete counter?</string>
+    <string name="counter_dialog_delete_text">The counter ‘%1$s’ will be permanently deleted</string>
     <string name="counter_dialog_delete_confirm">Delete</string>
     <string name="counter_dialog_delete_cancel">Cancel</string>
     <string name="counter_dialog_edit_title">Edit counter name</string>

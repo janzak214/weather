@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -44,6 +46,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,9 +60,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
+import resources.counter_dialog_delete_cancel
+import resources.counter_dialog_delete_confirm
+import resources.counter_dialog_delete_text
+import resources.counter_dialog_delete_title
 import resources.counter_edit_button
 import resources.counter_menu_delete
 import resources.counter_menu_more
+import ui.theme.Easing
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
@@ -90,6 +98,8 @@ fun NumberScreen(
         animationState.targetState = visible
     }
 
+    var deleteDialogVisible by remember { mutableStateOf(false) }
+
     AnimatedVisibility(
         visibleState = animationState,
         enter = EnterTransition.None,
@@ -113,7 +123,10 @@ fun NumberScreen(
                         },
                         actions = {
                             IconButton({}) {
-                                Icon(Icons.Default.Edit, stringResource(Res.string.counter_edit_button))
+                                Icon(
+                                    Icons.Default.Edit,
+                                    stringResource(Res.string.counter_edit_button)
+                                )
                             }
 
                             Box(
@@ -121,7 +134,10 @@ fun NumberScreen(
                             ) {
                                 var expanded by remember { mutableStateOf(false) }
                                 IconButton({ expanded = true }) {
-                                    Icon(Icons.Default.MoreVert, stringResource(Res.string.counter_menu_more))
+                                    Icon(
+                                        Icons.Default.MoreVert,
+                                        stringResource(Res.string.counter_menu_more)
+                                    )
                                 }
                                 DropdownMenu(
                                     expanded = expanded,
@@ -134,7 +150,7 @@ fun NumberScreen(
                                                 style = MaterialTheme.typography.labelLarge
                                             )
                                         },
-                                        onClick = goUp,
+                                        onClick = { deleteDialogVisible = true },
                                         leadingIcon = {
                                             Icon(
                                                 Icons.Default.Delete,
@@ -149,6 +165,24 @@ fun NumberScreen(
                     )
                 }
             ) { padding ->
+
+
+                AnimatedVisibility(deleteDialogVisible) {
+                    DeleteCounterDialog(
+                        onConfirm = {
+                            deleteDialogVisible = false
+                            goUp()
+                        },
+                        onDismiss = { deleteDialogVisible = false },
+                        modifier = Modifier.animateEnterExit(
+                            enter = slideInVertically(animationSpec = Easing.enterTween()) { -it } + fadeIn(
+                                animationSpec = Easing.enterTween()
+                            ),
+                            exit = slideOutVertically(animationSpec = Easing.exitTween()) { -it } + fadeOut(
+                                animationSpec = Easing.exitTween()
+                            ))
+                    )
+                }
 
                 Column(
                     Modifier.fillMaxSize().padding(padding)
@@ -208,13 +242,7 @@ fun NumberScreen(
                                     "$targetState",
                                     style = MaterialTheme.typography.displayLarge,
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier
-//                                        .Companion.sharedElement(
-//                                            sharedTransitionScope.rememberSharedContentState(
-//                                                key = "counter-text-$number"
-//                                            ), animatedVisibilityScope = animatedVisibilityScope
-//                                        )
-                                        .weight(1f)
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
                             IconButton(
@@ -234,4 +262,38 @@ fun NumberScreen(
             }
         }
     }
+
+}
+
+@Composable
+fun DeleteCounterDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onConfirm,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) { Text(stringResource(Res.string.counter_dialog_delete_confirm)) }
+        },
+        dismissButton = {
+            TextButton(onDismiss) { Text(stringResource(Res.string.counter_dialog_delete_cancel)) }
+        },
+        icon = {
+            Icon(Icons.Default.Delete, null)
+        },
+        title = {
+            Text(stringResource(Res.string.counter_dialog_delete_title))
+        },
+        text = {
+            Text(stringResource(Res.string.counter_dialog_delete_text, "Test counter"))
+        },
+        modifier = modifier,
+    )
 }
