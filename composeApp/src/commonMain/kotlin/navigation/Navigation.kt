@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import model.CounterId
 import ui.screens.HomeScreen
 import ui.screens.NumberScreen
 import ui.theme.Easing
@@ -23,7 +24,7 @@ sealed class Route {
     data object Home : Route()
 
     @Serializable
-    data class Number(val value: Int) : Route()
+    data class Counter(val id: Int) : Route()
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -37,14 +38,14 @@ fun AppNavHost() {
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None }) {
                 HomeScreen(
-                    navigateNumber = { navController.navigate(Route.Number(it)) },
+                    navigateCounter = { navController.navigate(Route.Counter(it.raw)) },
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@composable,
                 )
                 HandleBack(navController)
             }
 
-            composable<Route.Number>(
+            composable<Route.Counter>(
                 enterTransition = {
 
                     fadeIn(
@@ -75,7 +76,7 @@ fun AppNavHost() {
                     )
                 },
             ) { backStackEntry ->
-                val route: Route.Number = backStackEntry.toRoute()
+                val route: Route.Counter = backStackEntry.toRoute()
                 HandleBack(navController)
                 NumberScreen(
                     goUp = {
@@ -83,7 +84,7 @@ fun AppNavHost() {
                             navController.navigateUp()
                         }
                     },
-                    number = route.value,
+                    counterId = CounterId(route.id),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@composable,
                 )

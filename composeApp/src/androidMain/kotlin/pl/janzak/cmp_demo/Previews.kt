@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import model.CounterId
 import ui.screens.CreateCounterDialog
 import ui.screens.DeleteCounterDialog
 import ui.screens.EditCounterDialog
@@ -18,7 +19,7 @@ fun HomeScreenPreview() {
     SharedTransitionScope {
         AnimatedVisibility(true, modifier = it) {
             HomeScreen(
-                navigateNumber = {},
+                navigateCounter = {},
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
             )
@@ -34,7 +35,7 @@ fun NumberScreenPreview() {
         AnimatedVisibility(true, modifier = it) {
             NumberScreen(
                 goUp = {},
-                number = 42,
+                counterId = CounterId(0),
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
 

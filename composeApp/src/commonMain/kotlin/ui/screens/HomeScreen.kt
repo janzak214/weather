@@ -43,6 +43,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import model.CounterId
+import model.HomeViewModel
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_create_cancel
@@ -56,9 +60,10 @@ import ui.theme.Easing
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
-    navigateNumber: (number: Int) -> Unit,
+    navigateCounter: (counterId: CounterId) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: HomeViewModel = viewModel { HomeViewModel() }
 ) {
     var createDialogVisible by remember { mutableStateOf(false) }
 
@@ -100,14 +105,17 @@ fun HomeScreen(
         AnimatedVisibility(createDialogVisible) {
 
             CreateCounterDialog(
-                onConfirm = { createDialogVisible = false },
+                onConfirm = {
+                    viewModel.create(it)
+                    createDialogVisible = false
+                },
                 onDismiss = { createDialogVisible = false },
                 modifier = dialogModifier()
             )
         }
 
 
-        val counters = remember { (1..10).toList() }
+        val counters by viewModel.counters.collectAsStateWithLifecycle()
 
         with(sharedTransitionScope) {
             LazyVerticalGrid(
@@ -116,20 +124,20 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(counters) {
+                items(counters) { (_, counter) ->
                     CounterCard(
-                        "Card $it",
-                        value = it,
-                        onClick = { navigateNumber(it) },
+                        name = counter.name,
+                        value = counter.value,
+                        onClick = { navigateCounter(counter.id) },
                         modifier = Modifier.Companion.sharedElement(
                             sharedTransitionScope.rememberSharedContentState(
-                                key = "counter-card-$it"
+                                key = "counter-card-${counter.id}"
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
                         textModifier = Modifier.Companion.sharedElement(
                             sharedTransitionScope.rememberSharedContentState(
-                                key = "counter-text-$it"
+                                key = "counter-text-${counter.id}"
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
@@ -195,7 +203,8 @@ fun CreateCounterDialog(
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                enabled = currentName != ""
             ) { Text(stringResource(Res.string.counter_dialog_create_confirm)) }
         },
         dismissButton = {

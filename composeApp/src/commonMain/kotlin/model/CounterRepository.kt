@@ -3,9 +3,13 @@ package model
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.Serializable
 
 @JvmInline
-value class CounterId(private val id: ULong)
+@Serializable
+value class CounterId(private val id: Int) {
+    val raw get() = id
+}
 
 data class Counter(val id: CounterId, val name: String, val value: Int)
 
@@ -19,12 +23,12 @@ interface CounterRepository {
     suspend fun incrementCounter(counterId: CounterId)
     suspend fun decrementCounter(counterId: CounterId)
 
-    suspend fun getCounter(counterId: CounterId): StateFlow<Counter>
-    suspend fun getAll(): StateFlow<Map<CounterId, Counter>>
+    fun getCounter(counterId: CounterId): StateFlow<Counter>
+    fun getAll(): StateFlow<Map<CounterId, Counter>>
 }
 
 private data class CounterState(
-    val currentId: ULong = 0uL,
+    val currentId: Int = 0,
     val data: Map<CounterId, Counter> = emptyMap()
 )
 
@@ -40,7 +44,7 @@ class CounterRepositoryImpl : CounterRepository {
             val newId = CounterId(currentId)
             result = newId
             val newCounter = Counter(id = newId, name = name, value = 0)
-            state.copy(currentId = currentId + 1uL, data = data + (newId to newCounter))
+            state.copy(currentId = currentId + 1, data = data + (newId to newCounter))
         }
 
         return result!!
@@ -66,13 +70,13 @@ class CounterRepositoryImpl : CounterRepository {
         }
     }
 
-    override suspend fun getCounter(counterId: CounterId): StateFlow<Counter> {
+    override fun getCounter(counterId: CounterId): StateFlow<Counter> {
         return _counters.mapState { state ->
             state.data[counterId] ?: throw (CounterNotFound(counterId))
         }
     }
 
-    override suspend fun getAll(): StateFlow<Map<CounterId, Counter>> {
+    override fun getAll(): StateFlow<Map<CounterId, Counter>> {
         return _counters.mapState { it.data }
     }
 }

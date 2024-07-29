@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import model.CounterId
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_delete_cancel
@@ -80,7 +81,7 @@ import ui.theme.Easing
 @Composable
 fun NumberScreen(
     goUp: () -> Unit,
-    number: Int,
+    counterId: CounterId,
     visible: Boolean = true,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -116,7 +117,7 @@ fun NumberScreen(
             Scaffold(
                 topBar = {
                     CenterAlignedTopAppBar(
-                        title = { Text("Card $number") },
+                        title = { Text("Card $counterId") },
                         navigationIcon = {
                             IconButton(onClick = {
                                 goUp()
@@ -218,7 +219,7 @@ fun NumberScreen(
                         modifier = Modifier.padding(8.dp).heightIn(0.dp, 200.dp).then(
                             Modifier.Companion.sharedElement(
                                 sharedTransitionScope.rememberSharedContentState(
-                                    key = "counter-card-$number"
+                                    key = "counter-card-$counterId"
                                 ),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             )
