@@ -47,6 +47,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,6 +65,10 @@ import resources.counter_dialog_delete_cancel
 import resources.counter_dialog_delete_confirm
 import resources.counter_dialog_delete_text
 import resources.counter_dialog_delete_title
+import resources.counter_dialog_edit_cancel
+import resources.counter_dialog_edit_confirm
+import resources.counter_dialog_edit_text_field_label
+import resources.counter_dialog_edit_title
 import resources.counter_edit_button
 import resources.counter_menu_delete
 import resources.counter_menu_more
@@ -99,6 +104,7 @@ fun NumberScreen(
     }
 
     var deleteDialogVisible by remember { mutableStateOf(false) }
+    var editDialogVisible by remember { mutableStateOf(false) }
 
     AnimatedVisibility(
         visibleState = animationState,
@@ -122,7 +128,7 @@ fun NumberScreen(
                             }
                         },
                         actions = {
-                            IconButton({}) {
+                            IconButton({ editDialogVisible = true }) {
                                 Icon(
                                     Icons.Default.Edit,
                                     stringResource(Res.string.counter_edit_button)
@@ -165,7 +171,16 @@ fun NumberScreen(
                     )
                 }
             ) { padding ->
-
+                val dialogModifier: AnimatedVisibilityScope.() -> Modifier = {
+                    Modifier.animateEnterExit(
+                        enter = slideInVertically(animationSpec = Easing.enterTween()) { -it } + fadeIn(
+                            animationSpec = Easing.enterTween()
+                        ),
+                        exit = slideOutVertically(animationSpec = Easing.exitTween()) { -it } + fadeOut(
+                            animationSpec = Easing.exitTween()
+                        )
+                    )
+                }
 
                 AnimatedVisibility(deleteDialogVisible) {
                     DeleteCounterDialog(
@@ -174,13 +189,19 @@ fun NumberScreen(
                             goUp()
                         },
                         onDismiss = { deleteDialogVisible = false },
-                        modifier = Modifier.animateEnterExit(
-                            enter = slideInVertically(animationSpec = Easing.enterTween()) { -it } + fadeIn(
-                                animationSpec = Easing.enterTween()
-                            ),
-                            exit = slideOutVertically(animationSpec = Easing.exitTween()) { -it } + fadeOut(
-                                animationSpec = Easing.exitTween()
-                            ))
+                        name = "name",
+                        modifier = dialogModifier()
+                    )
+                }
+
+                AnimatedVisibility(editDialogVisible) {
+                    EditCounterDialog(
+                        onConfirm = {
+                            editDialogVisible = false
+                        },
+                        onDismiss = { editDialogVisible = false },
+                        name = "name",
+                        modifier = dialogModifier()
                     )
                 }
 
@@ -262,11 +283,11 @@ fun NumberScreen(
             }
         }
     }
-
 }
 
 @Composable
 fun DeleteCounterDialog(
+    name: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -292,7 +313,47 @@ fun DeleteCounterDialog(
             Text(stringResource(Res.string.counter_dialog_delete_title))
         },
         text = {
-            Text(stringResource(Res.string.counter_dialog_delete_text, "Test counter"))
+            Text(stringResource(Res.string.counter_dialog_delete_text, name))
+        },
+        modifier = modifier,
+    )
+}
+
+
+@Composable
+fun EditCounterDialog(
+    name: String,
+    onConfirm: (newName: String) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var currentName by remember { mutableStateOf(name) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                { onConfirm(currentName) },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) { Text(stringResource(Res.string.counter_dialog_edit_confirm)) }
+        },
+        dismissButton = {
+            TextButton(onDismiss) { Text(stringResource(Res.string.counter_dialog_edit_cancel)) }
+        },
+        icon = {
+            Icon(Icons.Default.Edit, null)
+        },
+        title = {
+            Text(stringResource(Res.string.counter_dialog_edit_title))
+        },
+        text = {
+            TextField(
+                currentName,
+                { currentName = it },
+                label = { Text(stringResource(Res.string.counter_dialog_edit_text_field_label)) })
         },
         modifier = modifier,
     )

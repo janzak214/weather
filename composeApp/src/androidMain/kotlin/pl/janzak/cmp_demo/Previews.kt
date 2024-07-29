@@ -5,6 +5,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import ui.screens.DeleteCounterDialog
+import ui.screens.EditCounterDialog
 import ui.screens.HomeScreen
 import ui.screens.NumberScreen
 
@@ -35,7 +37,21 @@ fun NumberScreenPreview() {
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
 
-            )
+                )
         }
     }
 }
+
+
+@Preview
+@Composable
+fun DeleteCounterDialogPreview() {
+    DeleteCounterDialog(name = "Test counter", onConfirm = {}, onDismiss = {})
+}
+
+@Preview
+@Composable
+fun EditCounterDialogPreview() {
+    EditCounterDialog(name = "Test counter", onConfirm = {}, onDismiss = {})
+}
+
