@@ -13,7 +13,7 @@ class CounterRepositoryTest {
         val repository = get()
         val id = repository.createCounter("counter")
         val counter = repository.getCounter(id)
-        assertEquals("counter", counter.value.name)
+        assertEquals("counter", counter.value?.name)
     }
 
     @Test
@@ -22,7 +22,7 @@ class CounterRepositoryTest {
         val id = repository.createCounter("counter")
         repository.incrementCounter(id)
         val counter = repository.getCounter(id)
-        assertEquals(1, counter.value.value)
+        assertEquals(1, counter.value?.value)
     }
 
     @Test
@@ -31,7 +31,7 @@ class CounterRepositoryTest {
         val id = repository.createCounter("counter")
         repository.decrementCounter(id)
         val counter = repository.getCounter(id)
-        assertEquals(-1, counter.value.value)
+        assertEquals(-1, counter.value?.value)
     }
 
     @Test

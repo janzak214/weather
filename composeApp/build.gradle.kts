@@ -22,7 +22,8 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-        
+        val desktopTest by getting
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -54,6 +55,13 @@ kotlin {
             implementation(libs.kotlin.test.junit)
             implementation(libs.kotlin.test.annotations)
             implementation(libs.kotlinx.coroutines.test)
+
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
+
+        desktopTest.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 }
