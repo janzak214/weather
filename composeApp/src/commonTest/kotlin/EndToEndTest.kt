@@ -24,5 +24,5 @@ class EndToEndTest {
         //     setContent { CompositionLocalProvider() { App() } }
 
         //     onNode(fab).assertExists()
-        // }
+        }
 }
