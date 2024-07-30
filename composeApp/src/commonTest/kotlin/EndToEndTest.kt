@@ -18,11 +18,11 @@ class EndToEndTest {
         Role.Button
     ) and hasText(runBlocking { getString(Res.string.main_screen_create_button) })
 
-    @Test
-    fun `FAB should be displayed`() =
-        runComposeUiTest {
+  //  @Test
+  //  fun `FAB should be displayed`() =
+    //    runComposeUiTest {
         //     setContent { CompositionLocalProvider() { App() } }
 
         //     onNode(fab).assertExists()
-        }
+    //    }
 }
