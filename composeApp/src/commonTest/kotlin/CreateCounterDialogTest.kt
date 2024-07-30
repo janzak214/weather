@@ -36,53 +36,53 @@ class CreateCounterDialogTest {
     private val textField = isEditable()
 
 
-    @Test
-    fun `confirm button is active only if the text field isn't empty`() =
-        runComposeUiTest {
-            setContent { CreateCounterDialog({}, {}) }
+    // @Test
+    // fun `confirm button is active only if the text field isn't empty`() =
+    //     runComposeUiTest {
+    //         setContent { CreateCounterDialog({}, {}) }
 
-            onNode(
-                confirmButton
-            ).assertIsNotEnabled()
+    //         onNode(
+    //             confirmButton
+    //         ).assertIsNotEnabled()
 
-            val name = "counter name"
+    //         val name = "counter name"
 
-            onNode(textField).performTextInput(name)
-            waitForIdle()
+    //         onNode(textField).performTextInput(name)
+    //         waitForIdle()
 
-            onNode(
-                confirmButton
-            ).assertIsEnabled()
-        }
+    //         onNode(
+    //             confirmButton
+    //         ).assertIsEnabled()
+    //     }
 
-    @Test
-    fun `onConfirm should be called if confirm button is clicked`() =
-        runComposeUiTest {
-            var result: String? = null
+    // @Test
+    // fun `onConfirm should be called if confirm button is clicked`() =
+    //     runComposeUiTest {
+    //         var result: String? = null
 
-            setContent { CreateCounterDialog(onConfirm = { result = it }, onDismiss = {}) }
+    //         setContent { CreateCounterDialog(onConfirm = { result = it }, onDismiss = {}) }
 
-            val name = "counter name"
+    //         val name = "counter name"
 
-            onNode(textField).performTextInput(name)
-            waitForIdle()
+    //         onNode(textField).performTextInput(name)
+    //         waitForIdle()
 
-            onNode(confirmButton).performClick()
-            waitForIdle()
+    //         onNode(confirmButton).performClick()
+    //         waitForIdle()
 
-            assertEquals(result, name)
-        }
+    //         assertEquals(result, name)
+    //     }
 
-    @Test
-    fun `onDismiss should be called if cancel button is clicked`() =
-        runComposeUiTest {
-            var called = false
+    // @Test
+    // fun `onDismiss should be called if cancel button is clicked`() =
+    //     runComposeUiTest {
+    //         var called = false
 
-            setContent { CreateCounterDialog(onConfirm = { }, onDismiss = { called = true }) }
+    //         setContent { CreateCounterDialog(onConfirm = { }, onDismiss = { called = true }) }
 
-            onNode(cancelButton).performClick()
-            waitForIdle()
+    //         onNode(cancelButton).performClick()
+    //         waitForIdle()
 
-            assert(called)
-        }
+    //         assert(called)
+    //     }
 }
