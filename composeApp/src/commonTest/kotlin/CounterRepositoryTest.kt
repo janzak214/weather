@@ -3,7 +3,6 @@ import model.CounterRepository
 import model.CounterRepositoryImpl
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 
 class CounterRepositoryTest {
     fun get(): CounterRepository = CounterRepositoryImpl()
@@ -48,8 +47,9 @@ class CounterRepositoryTest {
         val repository = get()
         val id = repository.createCounter("counter")
         repository.deleteCounter(id)
-        assertFails {
+        assertEquals(
+            null,
             repository.getCounter(id).value
-        }
+        )
     }
 }
