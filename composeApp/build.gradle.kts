@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,12 +11,22 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
+dependencies {
+    testImplementation(libs.androidx.ui.test.junit4.android)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+}
+
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
     
     jvm("desktop")
@@ -23,6 +34,7 @@ kotlin {
     sourceSets {
         val desktopMain by getting
         val desktopTest by getting
+        val androidInstrumentedTest by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -49,8 +61,9 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
-
         commonTest.dependencies {
+            implementation(kotlin("test"))
+
             implementation(libs.kotlin.test.common)
             implementation(libs.kotlin.test.junit)
             implementation(libs.kotlin.test.annotations)
@@ -59,9 +72,9 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
         }
-
         desktopTest.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(compose.desktop.uiTestJUnit4)
         }
     }
 }
@@ -80,6 +93,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -102,6 +116,20 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+        managedDevices {
+            localDevices {
+                create("emulator") {
+                    device = "Pixel 7a"
+                    apiLevel = 34
+                    systemImageSource = "aosp-atd"
+                }
+            }
+        }
+    }
 }
 
 compose.desktop {
@@ -112,6 +140,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "pl.janzak.cmp_demo"
             packageVersion = "1.0.0"
+            windows {
+                includeAllModules = true
+            }
         }
     }
 }

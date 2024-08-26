@@ -1,11 +1,11 @@
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isEditable
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
@@ -15,34 +15,40 @@ import resources.Res
 import resources.counter_dialog_create_cancel
 import resources.counter_dialog_create_confirm
 import ui.screens.CreateCounterDialog
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalTestApi::class)
-class CreateCounterDialogTest {
-    private val confirmButton =
+class CreateCounterDialogTest : UiTest() {
+    private fun confirmButton() =
         SemanticsMatcher.expectValue(
             SemanticsProperties.Role,
             Role.Button
         ) and hasText(runBlocking { getString(Res.string.counter_dialog_create_confirm) })
 
-    private val cancelButton =
+    private fun cancelButton() =
         SemanticsMatcher.expectValue(
             SemanticsProperties.Role,
             Role.Button
         ) and hasText(runBlocking { getString(Res.string.counter_dialog_create_cancel) })
 
 
-    private val textField = isEditable()
+    private val textField = SemanticsMatcher.keyIsDefined(SemanticsProperties.EditableText)
 
 
     @Test
-    fun `confirm button is active only if the text field isn't empty`() =
-        runComposeUiTest {
-            setContent { CreateCounterDialog({}, {}) }
+    fun canReadStringResources() = runTest {
+        val string = runBlocking { getString(Res.string.counter_dialog_create_confirm) }
+        assertNotNull(string)
+    }
 
+    @Test
+    fun confirmButtonIsActiveOnlyIfTheFieldIsNotEmpty() = runTest {
+            setContent { CreateCounterDialog({}, {}) }
             onNode(
-                confirmButton
+                confirmButton()
             ).assertIsNotEnabled()
 
             val name = "counter name"
@@ -51,13 +57,12 @@ class CreateCounterDialogTest {
             waitForIdle()
 
             onNode(
-                confirmButton
+                confirmButton()
             ).assertIsEnabled()
         }
 
     @Test
-    fun `onConfirm should be called if confirm button is clicked`() =
-        runComposeUiTest {
+    fun onConfirmShouldBeCalledIfConfirmButtonClicked() = runTest {
             var result: String? = null
 
             setContent { CreateCounterDialog(onConfirm = { result = it }, onDismiss = {}) }
@@ -67,20 +72,20 @@ class CreateCounterDialogTest {
             onNode(textField).performTextInput(name)
             waitForIdle()
 
-            onNode(confirmButton).performClick()
+            onNode(confirmButton()).performClick()
             waitForIdle()
+
 
             assertEquals(result, name)
         }
 
     @Test
-    fun `onDismiss should be called if cancel button is clicked`() =
-        runComposeUiTest {
+    fun onDismissShouldBeCalledIfCancelButtonIsClicked() = runTest {
             var called = false
 
             setContent { CreateCounterDialog(onConfirm = { }, onDismiss = { called = true }) }
 
-            onNode(cancelButton).performClick()
+            onNode(cancelButton()).performClick()
             waitForIdle()
 
             assert(called)

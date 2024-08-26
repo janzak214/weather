@@ -12,17 +12,16 @@ import resources.main_screen_create_button
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class EndToEndTest {
-    private val fab = SemanticsMatcher.expectValue(
+class EndToEndTest : UiTest() {
+    private fun fab() = SemanticsMatcher.expectValue(
         SemanticsProperties.Role,
         Role.Button
     ) and hasText(runBlocking { getString(Res.string.main_screen_create_button) })
 
     @Test
-    fun `FAB should be displayed`() =
-        runComposeUiTest {
-            setContent { CompositionLocalProvider() { App() } }
+    fun fabShouldBeDisplayed() = runAppTest {
+        setContent { App() }
 
-            onNode(fab).assertExists()
-        }
+        onNode(fab()).assertExists()
+    }
 }
