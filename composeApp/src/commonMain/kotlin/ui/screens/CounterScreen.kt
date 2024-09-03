@@ -10,9 +10,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
@@ -86,6 +84,7 @@ fun CounterScreen(
     goUp: () -> Unit,
     counterId: CounterId,
     visible: Boolean = true,
+
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: CounterViewModel = viewModel {
@@ -214,11 +213,7 @@ fun CounterScreen(
                 }
 
                 Column(
-                    Modifier.fillMaxSize().padding(padding)
-                        .animateEnterExit(
-                            enter = slideInHorizontally { it },
-                            exit = slideOutHorizontally { it },
-                        ),
+                    Modifier.fillMaxSize().padding(padding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
