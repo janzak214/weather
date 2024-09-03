@@ -48,7 +48,7 @@ fun NumberScreenPreview() {
         AnimatedVisibility(true, modifier = it) {
             NumberScreen(
                 goUp = {},
-                counterId = CounterId(0),
+                counterId = defaultCounter.id,
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
                 viewModel = object : NumberViewModel() {
