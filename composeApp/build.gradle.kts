@@ -17,6 +17,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
+    debugImplementation(libs.androidx.ui.tooling)
 }
 
 kotlin {
@@ -42,6 +43,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.sqldelight.android)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.preview)
@@ -59,11 +61,13 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.sqldelight.coroutinesextensions)
+            implementation(libs.ktor.client.core)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqldelight.sqlite)
+            implementation(libs.ktor.client.okhttp)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

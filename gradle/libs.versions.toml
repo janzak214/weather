@@ -22,6 +22,8 @@ robolectric = "4.13"
 uiTestJunit4Android = "1.7.0-rc01"
 uiTestManifest = "1.7.0-rc01"
 sqldelight = "2.0.2"
+ktor = "2.3.12"
+uiTooling = "1.6.8"
 
 [libraries]
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -53,6 +55,9 @@ sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.re
 sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-coroutinesextensions= { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

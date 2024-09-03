@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import model.CounterId
 import model.HomeViewModel
+import model.HomeViewModelImpl
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_create_cancel
@@ -63,7 +64,7 @@ fun HomeScreen(
     navigateCounter: (counterId: CounterId) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: HomeViewModel = viewModel { HomeViewModel() }
+    viewModel: HomeViewModel = viewModel { HomeViewModelImpl() }
 ) {
     var createDialogVisible by remember { mutableStateOf(false) }
 

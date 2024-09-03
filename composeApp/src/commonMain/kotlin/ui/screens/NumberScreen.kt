@@ -62,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import model.CounterId
 import model.NumberViewModel
+import model.NumberViewModelImpl
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_delete_cancel
@@ -88,7 +89,7 @@ fun NumberScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: NumberViewModel = viewModel {
-        NumberViewModel(
+        NumberViewModelImpl(
             counterId
         )
     }

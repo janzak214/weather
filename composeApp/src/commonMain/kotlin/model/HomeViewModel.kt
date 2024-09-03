@@ -2,19 +2,23 @@ package model
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class HomeViewModel : ViewModel(), KoinComponent {
+abstract class HomeViewModel : ViewModel() {
+    abstract val counters: Flow<List<Pair<CounterId, Counter>>>
+    abstract fun create(name: String)
+}
+
+class HomeViewModelImpl : KoinComponent, HomeViewModel() {
     private val _counterRepository: CounterRepository by inject()
     private val _coroutineScope: CoroutineScope by inject()
 
-    val counters = _counterRepository.getAll().map { it.toList() }
-    fun create(name: String) {
+    override val counters = _counterRepository.getAll().map { it.toList() }
+    override fun create(name: String) {
         _coroutineScope.launch {
             _counterRepository.createCounter(name)
         }
