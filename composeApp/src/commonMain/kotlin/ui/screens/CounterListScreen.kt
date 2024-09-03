@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import model.CounterId
-import model.HomeViewModel
-import model.HomeViewModelImpl
+import model.CounterListViewModel
+import model.CounterListViewModelImpl
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_create_cancel
@@ -60,11 +60,11 @@ import ui.theme.Easing
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(
+fun CounterListScreen(
     navigateCounter: (counterId: CounterId) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: HomeViewModel = viewModel { HomeViewModelImpl() }
+    viewModel: CounterListViewModel = viewModel { CounterListViewModelImpl() }
 ) {
     var createDialogVisible by remember { mutableStateOf(false) }
 

@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import model.Counter
 import model.CounterId
-import model.HomeViewModel
-import model.NumberViewModel
-import ui.screens.HomeScreen
-import ui.screens.NumberScreen
+import model.CounterListViewModel
+import model.CounterViewModel
+import ui.screens.CounterListScreen
+import ui.screens.CounterScreen
 
 val defaultCounter = Counter(id = CounterId(0), name = "Test counter", value = 42)
 
@@ -20,11 +20,11 @@ val defaultCounter = Counter(id = CounterId(0), name = "Test counter", value = 4
 fun HomeScreenPreview() {
     SharedTransitionScope {
         AnimatedVisibility(true, modifier = it) {
-            HomeScreen(
+            CounterListScreen(
                 navigateCounter = {},
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
-                viewModel = object : HomeViewModel() {
+                viewModel = object : CounterListViewModel() {
                     override val counters: Flow<List<Pair<CounterId, Counter>>> =
                         flowOf(listOf(defaultCounter.id to defaultCounter))
 
@@ -41,12 +41,12 @@ fun HomeScreenPreview() {
 fun NumberScreenPreview() {
     SharedTransitionScope {
         AnimatedVisibility(true, modifier = it) {
-            NumberScreen(
+            CounterScreen(
                 goUp = {},
                 counterId = CounterId(0),
                 sharedTransitionScope = this@SharedTransitionScope,
                 animatedVisibilityScope = this@AnimatedVisibility,
-                viewModel = object : NumberViewModel() {
+                viewModel = object : CounterViewModel() {
                     override val counter: Flow<Counter?> = flowOf(defaultCounter)
                     override fun increment() = Unit
                     override fun decrement() = Unit

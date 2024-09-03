@@ -61,8 +61,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import model.CounterId
-import model.NumberViewModel
-import model.NumberViewModelImpl
+import model.CounterViewModel
+import model.CounterViewModelImpl
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.counter_dialog_delete_cancel
@@ -82,14 +82,14 @@ import ui.theme.Easing
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
 )
 @Composable
-fun NumberScreen(
+fun CounterScreen(
     goUp: () -> Unit,
     counterId: CounterId,
     visible: Boolean = true,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: NumberViewModel = viewModel {
-        NumberViewModelImpl(
+    viewModel: CounterViewModel = viewModel {
+        CounterViewModelImpl(
             counterId
         )
     }

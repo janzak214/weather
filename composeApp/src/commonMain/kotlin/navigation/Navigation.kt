@@ -15,8 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import model.CounterId
-import ui.screens.HomeScreen
-import ui.screens.NumberScreen
+import ui.screens.CounterListScreen
+import ui.screens.CounterScreen
 import ui.theme.Easing
 
 sealed class Route {
@@ -37,7 +37,7 @@ fun AppNavHost() {
             composable<Route.Home>(
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None }) {
-                HomeScreen(
+                CounterListScreen(
                     navigateCounter = { navController.navigate(Route.Counter(it.raw)) },
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@composable,
@@ -76,7 +76,7 @@ fun AppNavHost() {
                 },
             ) { backStackEntry ->
                 val route: Route.Counter = backStackEntry.toRoute()
-                NumberScreen(
+                CounterScreen(
                     goUp = navController::navigateUp,
                     counterId = CounterId(route.id),
                     sharedTransitionScope = this@SharedTransitionLayout,

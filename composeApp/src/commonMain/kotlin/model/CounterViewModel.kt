@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-abstract class NumberViewModel : ViewModel() {
+abstract class CounterViewModel : ViewModel() {
     abstract val counter: Flow<Counter?>
     abstract fun increment()
     abstract fun decrement()
@@ -16,7 +16,7 @@ abstract class NumberViewModel : ViewModel() {
     abstract fun rename(newName: String)
 }
 
-class NumberViewModelImpl(private val id: CounterId) : NumberViewModel(), KoinComponent {
+class CounterViewModelImpl(private val id: CounterId) : CounterViewModel(), KoinComponent {
     private val _counterRepository: CounterRepository by inject()
     private val _coroutineScope: CoroutineScope by inject()
 

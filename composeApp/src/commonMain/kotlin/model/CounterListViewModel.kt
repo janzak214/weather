@@ -8,12 +8,12 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-abstract class HomeViewModel : ViewModel() {
+abstract class CounterListViewModel : ViewModel() {
     abstract val counters: Flow<List<Pair<CounterId, Counter>>>
     abstract fun create(name: String)
 }
 
-class HomeViewModelImpl : KoinComponent, HomeViewModel() {
+class CounterListViewModelImpl : KoinComponent, CounterListViewModel() {
     private val _counterRepository: CounterRepository by inject()
     private val _coroutineScope: CoroutineScope by inject()
 
