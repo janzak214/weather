@@ -1,0 +1,41 @@
+CREATE TABLE counters (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    value INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT INTO counters (name)
+VALUES ('Default counter');
+
+selectAll:
+SELECT * FROM counters;
+
+get:
+SELECT * FROM counters
+WHERE id = ?;
+
+rename:
+UPDATE counters
+SET name = ?
+WHERE id = ?;
+
+create:
+INSERT INTO counters (name)
+VALUES (?);
+
+getCreatedId:
+SELECT last_insert_rowid();
+
+increment:
+UPDATE counters
+SET value = value + 1
+WHERE id = ?;
+
+decrement:
+UPDATE counters
+SET value = value - 1
+WHERE id = ?;
+
+delete:
+DELETE FROM counters
+WHERE id = ?;

@@ -115,7 +115,7 @@ fun HomeScreen(
         }
 
 
-        val counters by viewModel.counters.collectAsStateWithLifecycle()
+        val counters by viewModel.counters.collectAsStateWithLifecycle(initialValue = emptyList())
 
         with(sharedTransitionScope) {
             LazyVerticalGrid(

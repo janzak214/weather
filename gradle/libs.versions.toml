@@ -19,8 +19,9 @@ kotlinx-coroutines = "1.9.0-RC"
 koin-bom = "4.0.0-RC1"
 lifecycle-viewmodel-compose = "2.8.0"
 robolectric = "4.13"
-uiTestJunit4Android = "1.7.0-beta06"
-uiTestManifest = "1.7.0-beta06"
+uiTestJunit4Android = "1.7.0-rc01"
+uiTestManifest = "1.7.0-rc01"
+sqldelight = "2.0.2"
 
 [libraries]
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -48,6 +49,10 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-bom" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-bom" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-coroutinesextensions= { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -56,3 +61,4 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

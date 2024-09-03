@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalTestApi::class)
-@RunWith(RobolectricTestRunner::class)
+//@RunWith(RobolectricTestRunner::class)
 actual abstract class UiTest {
     actual fun runTest(block: ComposeUiTest.() -> Unit) {
         runComposeUiTest(block = block)

@@ -42,7 +42,6 @@ fun AppNavHost() {
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@composable,
                 )
-                HandleBack(navController)
             }
 
             composable<Route.Counter>(
@@ -77,13 +76,8 @@ fun AppNavHost() {
                 },
             ) { backStackEntry ->
                 val route: Route.Counter = backStackEntry.toRoute()
-                HandleBack(navController)
                 NumberScreen(
-                    goUp = {
-                        if (!duringScreenTransition(navController)) {
-                            navController.navigateUp()
-                        }
-                    },
+                    goUp = navController::navigateUp,
                     counterId = CounterId(route.id),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this@composable,
