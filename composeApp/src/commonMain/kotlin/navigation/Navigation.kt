@@ -38,6 +38,7 @@ import kotlinx.serialization.Serializable
 import model.CounterId
 import ui.screens.CounterListScreen
 import ui.screens.CounterScreen
+import ui.screens.WebScreen
 import ui.theme.Easing
 
 sealed class Route {
@@ -141,7 +142,7 @@ fun NavigationBarNavHost(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
-            Text("WEB!!!11!")
+            WebScreen()
         }
 
 

@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.sqldelight.coroutinesextensions)
             implementation(libs.ktor.client.core)
+            implementation(libs.composeIcons.weatherIcons)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
