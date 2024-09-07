@@ -29,6 +29,7 @@ import compose.icons.weathericons.DayStormShowers
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
+import io.ktor.util.Identity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -36,6 +37,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.float
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -66,19 +68,32 @@ suspend fun fetch(): ApiResponse {
 
 data class Scale(
     val domain: ClosedFloatingPointRange<Float>,
-    val range: ClosedFloatingPointRange<Float>
+    val range: ClosedFloatingPointRange<Float>,
+    val mapDomain: Scale.(x: Float) -> Float = { it },
+    val mapRange: Scale.(x: Float) -> Float = { it },
 ) {
     operator fun invoke(value: Float): Float =
-        lerp(
-            range.start,
-            range.endInclusive,
-            (value - domain.start) / (domain.endInclusive - domain.start)
+        mapRange(
+            lerp(
+                range.start,
+                range.endInclusive,
+                (mapDomain(value) - domain.start) / (domain.endInclusive - domain.start)
+            )
         )
 
-    fun nice(): Scale = copy(
-        domain = floor(range.start * 10) / 10
-                ..ceil(range.endInclusive * 10) / 10
+    fun nice(stepSize: Float): Scale = copy(
+        domain = floor(domain.start / stepSize) * stepSize
+                ..ceil(domain.endInclusive / stepSize) * stepSize
     )
+
+    fun ticks(stepSize: Float): List<Float> {
+        val rangeSize = domain.endInclusive - domain.start
+        val count = ceil(rangeSize / stepSize).toInt()
+
+        return (0..count).map {
+            domain.start + it * stepSize
+        }
+    }
 }
 
 @Composable
@@ -117,15 +132,18 @@ fun WebScreen() {
                     .fillMaxWidth()
                     .height(300.dp)
                     .drawWithCache {
-                        val xScale = Scale(0F..count.toFloat(), 0F..size.width)
-                        val yTicks = listOf(-10, 0, 10, 20, 30, 40)
-                        val yScale = Scale(
-                            min(yTicks.min().toFloat(), values.min())..max(
-                                yTicks.max().toFloat(), values.max()
-                            ), size.height..0F
-                        )
+                        val xStep = 24F
+                        val xScale = Scale(0F..count.toFloat(), 0F..size.width)//.nice(xStep)
+                        val xTicks = xScale.ticks(xStep)
 
-                        val yTicksPositions = yTicks.map { yScale(it.toFloat()) }.toList()
+                        val yStep = 5F
+                        val yScale = Scale(
+                            values.min()..values.max(), 0F..size.height,
+                            mapRange = { range.endInclusive - it }
+                        ).nice(yStep)
+                        val yTicks = yScale.ticks(yStep)
+
+//                        val yTicksPositions = yTicks.map { yScale(it) }
 
                         val rescaled = values.mapIndexed { index, value ->
                             xScale(index.toFloat()) to yScale(value)
@@ -175,20 +193,28 @@ fun WebScreen() {
 //                                )
 //                            }
 
-                            for ((tick, tickPosition) in yTicks.zip(yTicksPositions)) {
-                                drawLine(
-                                    gridColor,
-                                    Offset(0F, tickPosition),
-                                    Offset(size.width, tickPosition)
-                                )
+                            for (xTick in yTicks) {
+                                val xPosition = yScale(xTick)
 
-                                drawText(
-                                    textMeasurer = textMeasurer,
-                                    text = tick.toString(),
-                                    topLeft = Offset(0F, tickPosition),
-                                    style = typography.labelSmall.copy(color = textColor)
-                                )
+                                for ((yTick, nextYTick) in xTicks.zipWithNext()) {
+                                    val offset = 4F
+                                    val yPosition = xScale(yTick)
+                                    val nextYPosition = xScale(nextYTick)
+                                    drawLine(
+                                        gridColor,
+                                        Offset(yPosition + offset, xPosition),
+                                        Offset(nextYPosition - offset, xPosition),
+                                    )
+
+//                                    drawText(
+//                                        textMeasurer = textMeasurer,
+//                                        text = yTick.toString(),
+//                                        topLeft = Offset(0F, yPosition),
+//                                        style = typography.labelSmall.copy(color = textColor)
+//                                    )
+                                }
                             }
+
 
                             drawPath(path, color = lineColor, style = Stroke(width = 2F))
                         }
