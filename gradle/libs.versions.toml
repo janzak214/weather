@@ -25,6 +25,7 @@ sqldelight = "2.0.2"
 ktor = "2.3.12"
 uiTooling = "1.6.8"
 composeIcons = "1.1.0"
+compass = "1.2.0"
 
 [libraries]
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -60,6 +61,10 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 composeIcons-weatherIcons = { module = "br.com.devsrsouza.compose.icons:erikflowers-weather-icons", version.ref = "composeIcons" }
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+compass-geolocation-browser = { module = "dev.jordond.compass:geolocation-browser", version.ref = "compass" }
+compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

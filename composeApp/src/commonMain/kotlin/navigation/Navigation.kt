@@ -36,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import model.CounterId
+import ui.screens.CakeScreen
 import ui.screens.CounterListScreen
 import ui.screens.CounterScreen
 import ui.screens.WebScreen
@@ -150,7 +151,7 @@ fun NavigationBarNavHost(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
-            Text("🍰🍰🍰")
+            CakeScreen()
         }
 
 
