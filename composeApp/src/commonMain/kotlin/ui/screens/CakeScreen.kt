@@ -40,11 +40,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
+import dev.jordond.compass.Location
+import dev.jordond.compass.Priority
+import dev.jordond.compass.geolocation.Geolocator
+import dev.jordond.compass.geolocation.GeolocatorResult
+import dev.jordond.compass.geolocation.LocationRequest
+import dev.jordond.compass.geolocation.Locator
+import dev.jordond.compass.geolocation.exception.GeolocationException
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
+import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -115,41 +126,7 @@ suspend fun geocode(query: String, count: Int = 10, language: String = "en"): Ge
     return format.decodeFromString<GeocodingResponse>(response.bodyAsText())
 }
 
-fun getLocation(): LocationResult {
-    try {
-        val script = """
-    Set-StrictMode -Version 3.0
-
-    try {
-        Add-Type -AssemblyName System.Device
-        ${'$'}GeoWatcher = New-Object System.Device.Location.GeoCoordinateWatcher
-        ${'$'}GeoWatcher.Start()
-        while ((${'$'}GeoWatcher.Status -ne 'Ready') -and (${'$'}GeoWatcher.Permission -ne 'Denied')) {
-             Start-Sleep -Milliseconds 100
-        }
-        ${'$'}location = @{
-            latitude=${'$'}GeoWatcher.Position.Location.Latitude; 
-            longitude=${'$'}GeoWatcher.Position.Location.Longitude
-        }
-        
-        Write-Output @{type="success"; result=${'$'}location} | ConvertTo-Json -Compress
-    } catch {
-        Write-Output @{type="error"; message=${'$'}_.Exception.Message} | ConvertTo-Json -Compress  
-    }
-
-
-""".trimIndent()
-
-        val process = ProcessBuilder("powershell.exe", "-NonInteractive", "-Command", "-").start()
-        process.outputWriter().write(script)
-        process.outputWriter().flush()
-        val result = process.inputReader().readLine()
-        process.destroy()
-        return Json.decodeFromString(result)
-    } catch (e: Exception) {
-        return LocationResult.Error(message = e.message ?: "Unknown error")
-    }
-}
+expect fun getLocator(): Locator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,6 +137,11 @@ fun CakeScreen(modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     var entries: List<GeocodingEntry> by remember { mutableStateOf(emptyList()) }
     var searchingForLocation by remember { mutableStateOf(false) }
+
+    val geolocator = remember {
+        val locator = getLocator()
+        Geolocator(locator)
+    }
 
 
     LaunchedEffect(text) {
@@ -176,10 +158,15 @@ fun CakeScreen(modifier: Modifier = Modifier) {
             coroutineScope.launch {
                 withContext(Dispatchers.IO) {
                     searchingForLocation = true
-                    val locationResponse = getLocation()
-                    if (locationResponse is LocationResult.Success) {
-                        location = locationResponse.result
-                        text = reverse(locationResponse.result).name
+                    when (val locationResponse = geolocator.current()) {
+                        is GeolocatorResult.Error -> Unit
+                        is GeolocatorResult.Success -> {
+                            location = Coordinates(
+                                locationResponse.data.coordinates.latitude.toFloat(),
+                                locationResponse.data.coordinates.longitude.toFloat()
+                            )
+                            text = reverse(location!!).name
+                        }
                     }
                     searchingForLocation = false
                 }
@@ -267,12 +254,15 @@ fun CakeScreen(modifier: Modifier = Modifier) {
 
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.semantics { traversalIndex = 1f }
-                .padding(start = 16.dp, top = 72.dp, end = 16.dp, bottom = 16.dp)
+                .padding(start = 16.dp, top = 2 * 72.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (location != null) {
-                Text("${location!!.latitude} ${location!!.longitude}")
+                Text(
+                    "${location!!.latitude} ${location!!.longitude}"
+                )
             }
         }
     }

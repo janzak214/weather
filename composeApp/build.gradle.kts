@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.sqldelight.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.compass.geolocation.mobile)
         }
         commonMain.dependencies {
             implementation(compose.preview)
@@ -63,6 +64,7 @@ kotlin {
             implementation(libs.sqldelight.coroutinesextensions)
             implementation(libs.ktor.client.core)
             implementation(libs.composeIcons.weatherIcons)
+            implementation(libs.compass.geolocation)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

@@ -216,7 +216,6 @@ fun AppNavHost() {
                     NavigationBarNavHost(
                         navController = nestedNavController,
                         transitionScope = this@SharedTransitionLayout,
-                        modifier = Modifier.padding(padding)
                     )
                 }
             }
