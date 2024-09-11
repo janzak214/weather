@@ -19,6 +19,9 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -216,7 +219,15 @@ fun WebScreen() {
                             }
 
 
-                            drawPath(path, color = lineColor, style = Stroke(width = 2F))
+//                            drawPath(path, color = lineColor, style = Stroke(width = 2F))
+                            drawPoints(
+                                rescaled.map { Offset(it.first, it.second) },
+                                pointMode = PointMode.Polygon,
+                                cap = StrokeCap.Round,
+                                color = lineColor,
+                                strokeWidth = 2F,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10F, 20F), 25F)
+                            )
                         }
                     }
             )

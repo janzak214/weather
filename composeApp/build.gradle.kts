@@ -65,6 +65,8 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.composeIcons.weatherIcons)
             implementation(libs.compass.geolocation)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.materialKolor)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

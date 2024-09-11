@@ -7,12 +7,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
@@ -40,27 +47,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
-import dev.jordond.compass.Location
-import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
-import dev.jordond.compass.geolocation.LocationRequest
 import dev.jordond.compass.geolocation.Locator
-import dev.jordond.compass.geolocation.exception.GeolocationException
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
-import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import model.CurrentWeather
+import model.DayWeather
+import model.LocationName
+import model.WeatherCode
+import ui.components.WeatherOverviewCard
 
 
 @Serializable
@@ -183,18 +188,33 @@ fun CakeScreen(modifier: Modifier = Modifier) {
                     onSearch = { expanded = false },
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    placeholder = { Text("Hinted search text") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = {
+                    placeholder = { Text("Search") },
+                    leadingIcon = {
                         if (expanded) {
                             IconButton(onClick = {
-                                expanded = false
                                 text = ""
+                                expanded = false
                             }) {
                                 Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Close"
+                                    Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = "Go back"
                                 )
+                            }
+                        } else {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
+                    },
+                    trailingIcon = {
+                        if (expanded) {
+                            if (text.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    text = ""
+                                }) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Close"
+                                    )
+                                }
                             }
                         } else {
                             var buttonOn by remember { mutableStateOf(false) }
@@ -253,17 +273,132 @@ fun CakeScreen(modifier: Modifier = Modifier) {
         }
 
 
-        Column(
+//        Column(
+
+//        ) {
+
+//
+//            repeat(40) {
+//
+//            }
+//        }
+//
+        LazyColumn(
             modifier = Modifier.semantics { traversalIndex = 1f }
-                .padding(start = 16.dp, top = 2 * 72.dp, end = 16.dp, bottom = 16.dp),
+                .padding(16.dp)
+//                .verticalScroll(
+//                    rememberScrollState()
+//                )
+                .fillMaxSize(),
+            userScrollEnabled = true,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            item {
+                Spacer(modifier = Modifier.requiredHeight(72.dp))
+            }
             if (location != null) {
-                Text(
-                    "${location!!.latitude} ${location!!.longitude}"
-                )
+                item {
+                    Text(
+                        "${location!!.latitude} ${location!!.longitude}"
+                    )
+                }
+            }
+            items(40) {
+                WeatherOverviewCardPreview()
             }
         }
+
+
     }
+}
+
+
+val location = LocationName(
+    name = "Bronowice Małe",
+    region = "Kraków, Polska"
+)
+
+val currentWeather = CurrentWeather(
+    time = LocalDateTime(2024, 9, 11, 14, 0, 0),
+    temperature = 29.42,
+    apparentTemperature = 20.24,
+    relativeHumidity = 42.0,
+    isDay = true,
+    surfacePressure = 982.4,
+    windSpeed = 6.1,
+    windDirection = 17.0,
+    cloudCover = 80.0,
+    weatherCode = WeatherCode.RAIN_SLIGHT
+)
+
+
+val forecast = listOf(
+    DayWeather(
+        date = LocalDate(2024, 9, 11),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.RAIN_SLIGHT
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 12),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.FOG
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 13),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.DRIZZLE_MODERATE
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 14),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.SNOW_FALL_MODERATE
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 15),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.SNOW_FALL_MODERATE
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 16),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.SNOW_FALL_MODERATE
+    ),
+    DayWeather(
+        date = LocalDate(2024, 9, 17),
+        temperatureMax = 30.5,
+        temperatureMin = 16.5,
+        precipitation = 20.0,
+        precipitationProbability = 90.0,
+        weatherCode = WeatherCode.SNOW_FALL_MODERATE
+    )
+)
+
+@Composable
+fun WeatherOverviewCardPreview() {
+    WeatherOverviewCard(
+        location,
+        currentWeather,
+        forecast,
+        goToDetails = {},
+        modifier = Modifier.padding(vertical = 4.dp).width(IntrinsicSize.Min).widthIn(388.dp)
+    )
 }
