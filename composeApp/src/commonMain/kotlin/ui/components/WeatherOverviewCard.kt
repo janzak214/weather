@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.materialkolor.ktx.darken
 import com.materialkolor.ktx.toColor
 import com.materialkolor.ktx.toHct
 import compose.icons.WeatherIcons
@@ -44,6 +43,16 @@ import kotlinx.datetime.format.DayOfWeekNames
 import model.CurrentWeather
 import model.DayWeather
 import model.LocationName
+import org.jetbrains.compose.resources.stringResource
+import resources.Res
+import resources.label_apparent_temperature
+import resources.weekday_abbreviation_1
+import resources.weekday_abbreviation_2
+import resources.weekday_abbreviation_3
+import resources.weekday_abbreviation_4
+import resources.weekday_abbreviation_5
+import resources.weekday_abbreviation_6
+import resources.weekday_abbreviation_7
 import ui.util.LocalUnits
 
 
@@ -66,19 +75,23 @@ fun WeatherOverviewCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
-                .background(MaterialTheme.colorScheme.secondaryContainer).padding(16.dp)
+                .background(MaterialTheme.colorScheme.secondaryContainer).padding(12.dp)
         ) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSecondaryContainer) {
                 Column(
                     verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.Start,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(location.name, style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        location.name,
+                        style = MaterialTheme.typography.titleLarge.copy(lineHeight = 1.em)
+                    )
                     Text(
                         location.region,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmall.copy(lineHeight = 1.em),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.alpha(0.6f)
+                        modifier = Modifier.alpha(0.7f)
                     )
                 }
 
@@ -109,17 +122,16 @@ fun WeatherOverviewCard(
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.alpha(0.7f)
                 ) {
                     Text(
                         LocalUnits.current.formatTemperature(currentWeather.apparentTemperature),
                         style = MaterialTheme.typography.titleMedium.copy(lineHeight = 1.em),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
 
-                    )
+                        )
                     Text(
-                        "apparent",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        stringResource(Res.string.label_apparent_temperature),
+                        style = MaterialTheme.typography.labelSmall.copy(lineHeight = 1.em),
                     )
                 }
                 Spacer(modifier.weight(1f))
@@ -230,6 +242,16 @@ fun WeatherOverviewCard(
                     )
                 }
 
+                val weekdayNames = DayOfWeekNames(
+                    stringResource(Res.string.weekday_abbreviation_1),
+                    stringResource(Res.string.weekday_abbreviation_2),
+                    stringResource(Res.string.weekday_abbreviation_3),
+                    stringResource(Res.string.weekday_abbreviation_4),
+                    stringResource(Res.string.weekday_abbreviation_5),
+                    stringResource(Res.string.weekday_abbreviation_6),
+                    stringResource(Res.string.weekday_abbreviation_7),
+                )
+
                 forecast.subList(0, 6).forEachIndexed { index, day ->
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -247,9 +269,10 @@ fun WeatherOverviewCard(
                             style = MaterialTheme.typography.labelLarge
                         )
                         Text(
-                            day.date.format(LocalDate.Format { dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED) }),
+                            day.date.format(LocalDate.Format { dayOfWeek(weekdayNames) }),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurface.darken(0.3f)
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.alpha(0.7f)
                         )
                         Spacer(Modifier.height(8.dp))
                         WeatherIcon(
