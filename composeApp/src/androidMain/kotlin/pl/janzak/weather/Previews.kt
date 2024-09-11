@@ -4,8 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import model.Counter
-import model.CounterId
 import model.CurrentWeather
 import model.DayWeather
 import model.LocationName
