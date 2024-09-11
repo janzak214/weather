@@ -7,6 +7,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import pl.janzak.weather.model.Counter
+import pl.janzak.weather.model.CounterId
+import pl.janzak.weather.model.CounterRepository
 
 abstract class CounterViewModel : ViewModel() {
     abstract val counter: Flow<Counter?>

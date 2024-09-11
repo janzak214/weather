@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Demo</string>
+    <string name="app_name">Pogoda</string>
     <string name="main_screen_title">Liczniki</string>
     <string name="main_screen_create_button">Utwórz nowy licznik</string>
     <string name="counter_edit_button">Edytuj</string>

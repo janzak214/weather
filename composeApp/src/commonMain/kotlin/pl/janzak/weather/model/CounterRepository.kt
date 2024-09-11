@@ -1,4 +1,4 @@
-package model
+package pl.janzak.weather.model
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.db.SqlDriver
@@ -7,10 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.Serializable
-import pl.janzak.cmp_demo.Database
+import model.mapState
+
+import pl.janzak.weather.Database
 
 @JvmInline
 @Serializable

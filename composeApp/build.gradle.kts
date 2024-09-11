@@ -93,7 +93,7 @@ kotlin {
 }
 
 android {
-    namespace = "pl.janzak.cmp_demo"
+    namespace = "pl.janzak.weather"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -101,7 +101,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "pl.janzak.cmp_demo"
+        applicationId = "pl.janzak.weather"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -151,7 +151,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "pl.janzak.cmp_demo"
+            packageName = "pl.janzak.weather"
             packageVersion = "1.0.0"
             windows {
                 includeAllModules = true
@@ -169,7 +169,7 @@ compose.resources {
 sqldelight {
     databases {
         create("Database") {
-            packageName = "pl.janzak.cmp_demo"
+            packageName = "pl.janzak.weather"
         }
     }
 }

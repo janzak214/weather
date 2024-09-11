@@ -45,7 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import model.CounterId
+import pl.janzak.weather.model.CounterId
 import model.CounterListViewModel
 import model.CounterListViewModelImpl
 import org.jetbrains.compose.resources.stringResource

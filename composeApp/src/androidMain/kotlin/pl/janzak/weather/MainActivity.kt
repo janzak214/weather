@@ -1,4 +1,4 @@
-package pl.janzak.cmp_demo
+package pl.janzak.weather
 
 import App
 import android.app.Activity

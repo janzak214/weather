@@ -1,6 +1,6 @@
 import kotlinx.coroutines.test.runTest
-import model.CounterRepository
-import model.CounterRepositoryImpl
+import pl.janzak.weather.model.CounterRepository
+import pl.janzak.weather.model.CounterRepositoryImpl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

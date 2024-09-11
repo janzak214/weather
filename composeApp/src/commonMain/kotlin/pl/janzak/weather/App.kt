@@ -2,14 +2,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.CoroutineScope
-import model.CounterRepository
-import model.CounterRepositoryImpl
+import pl.janzak.weather.model.CounterRepository
 import navigation.AppNavHost
 import org.koin.compose.KoinApplication
 import org.koin.dsl.module
 import ui.theme.AppTheme
 import data.DriverFactory
-import model.DbCounterRepository
+import pl.janzak.weather.model.DbCounterRepository
 import org.koin.core.module.Module
 
 val appModule = module {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Demo</string>
+    <string name="app_name">Weather</string>
     <string name="main_screen_title">Counter app</string>
     <string name="main_screen_create_button">Create a new counter</string>
     <string name="counter_edit_button">Edit</string>

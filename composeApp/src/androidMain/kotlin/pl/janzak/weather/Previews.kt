@@ -1,4 +1,4 @@
-package pl.janzak.cmp_demo
+package pl.janzak.weather
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

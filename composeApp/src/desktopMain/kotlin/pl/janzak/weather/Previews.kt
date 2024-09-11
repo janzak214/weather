@@ -5,8 +5,8 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import model.Counter
-import model.CounterId
+import pl.janzak.weather.model.Counter
+import pl.janzak.weather.model.CounterId
 import model.CounterListViewModel
 import model.CounterViewModel
 import ui.screens.CounterListScreen

@@ -2,7 +2,7 @@ package data
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import pl.janzak.cmp_demo.Database
+import pl.janzak.weather.Database
 import java.util.Properties
 
 actual class DriverFactory {
