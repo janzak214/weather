@@ -16,7 +16,7 @@ loadCurrent:
 SELECT * FROM currentWeather WHERE coordinates = ?;
 
 insertCurrent:
-INSERT INTO currentWeather VALUES ?;
+INSERT OR REPLACE INTO currentWeather VALUES ?;
 
 deleteCurrent:
 DELETE FROM currentWeather WHERE coordinates = ?;

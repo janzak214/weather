@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.serialization)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.parcelize)
 }
 
 dependencies {

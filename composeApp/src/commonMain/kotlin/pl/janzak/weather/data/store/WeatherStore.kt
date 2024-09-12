@@ -71,6 +71,8 @@ class WeatherStoreProvider(
                     println("XXX reading $it")
                     database.currentQueries.loadCurrent(it.toString()).asFlow()
                         .mapToOneOrNull(Dispatchers.IO).map { local ->
+                            println("XXX reading $it: $local")
+
                             if (local == null) {
                                 null
                             } else {

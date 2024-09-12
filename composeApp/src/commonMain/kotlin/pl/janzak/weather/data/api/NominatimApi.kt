@@ -4,6 +4,7 @@ import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.ktor.getApiResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -12,7 +13,7 @@ data class Coordinates(
     val latitude: Double,
     val longitude: Double,
 ) {
-    override fun toString() = "$latitude;$longitude"
+    override fun toString() = "%.2f;%.2f".format(latitude, longitude).replace(',', '.')
 
     companion object {
         fun parse(value: String): Coordinates {
@@ -23,11 +24,17 @@ data class Coordinates(
 }
 
 @Serializable
-data class ReverseGeocodingResponse(val name: String)
+data class ReverseGeocodingResponse(
+    val name: String,
+    @SerialName("display_name") val displayName: String,
+)
 
 
 class NominatimApi(private val baseUrl: String, private val client: HttpClient) {
-    suspend fun reverseGeocode(coordinates: Coordinates, language: String = "en-US"): ApiResponse<ReverseGeocodingResponse> =
+    suspend fun reverseGeocode(
+        coordinates: Coordinates,
+        language: String = "en-US"
+    ): ApiResponse<ReverseGeocodingResponse> =
         client.getApiResponse(baseUrl) {
             url {
                 pathSegments = listOf("reverse")

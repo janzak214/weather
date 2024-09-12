@@ -1,0 +1,20 @@
+CREATE TABLE favorites (
+    coordinates TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    region TEXT NOT NULL
+);
+
+loadAllFavorites:
+SELECT * FROM favorites;
+
+loadFavorites:
+SELECT * FROM favorites WHERE coordinates = ?;
+
+insertFavorites:
+INSERT OR REPLACE INTO favorites VALUES ?;
+
+deleteFavorites:
+DELETE FROM favorites WHERE coordinates = ?;
+
+deleteAllFavorites:
+DELETE FROM favorites;

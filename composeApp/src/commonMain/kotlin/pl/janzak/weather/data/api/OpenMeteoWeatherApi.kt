@@ -2,6 +2,7 @@ package pl.janzak.weather.data.api
 
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.ktor.getApiResponse
+import com.skydoves.sandwich.mapSuccess
 import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
 import kotlinx.datetime.LocalDate
@@ -79,7 +80,7 @@ class OpenMeteoWeatherApi(private val baseUrl: String, private val client: HttpC
     suspend fun currentWeather(
         coordinates: Coordinates
     ): ApiResponse<CurrentWeatherResponse> =
-        client.getApiResponse(baseUrl) {
+        client.getApiResponse<CurrentWeatherResponse>(baseUrl) {
             url {
                 pathSegments = listOf("v1", "forecast")
             }
@@ -98,7 +99,7 @@ class OpenMeteoWeatherApi(private val baseUrl: String, private val client: HttpC
             parameter("longitude", coordinates.longitude)
             parameter("current", current.joinToString(","))
             parameter("timezone", "auto")
-        }
+        }.mapSuccess { copy(latitude = coordinates.latitude, longitude = coordinates.longitude) }
 
     suspend fun dailyForecast(coordinates: Coordinates): ApiResponse<DailyForecastResponse> =
         client.getApiResponse(baseUrl)

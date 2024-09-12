@@ -42,7 +42,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DayOfWeekNames
 import model.CurrentWeather
 import model.DayWeather
-import model.LocationName
+import pl.janzak.weather.model.LocationName
 import org.jetbrains.compose.resources.stringResource
 import resources.Res
 import resources.label_apparent_temperature
@@ -262,7 +262,7 @@ fun WeatherOverviewCard(
                             } else {
                                 Modifier
                             }
-                        ).padding(10.dp)
+                        ).padding(8.dp)
                     ) {
                         Text(
                             "%d".format(day.date.dayOfMonth),

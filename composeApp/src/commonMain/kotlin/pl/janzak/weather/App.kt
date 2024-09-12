@@ -12,11 +12,12 @@ import pl.janzak.weather.model.DbCounterRepository
 import org.koin.core.module.Module
 import pl.janzak.weather.data.api.apiModule
 import pl.janzak.weather.data.store.storeModule
+import pl.janzak.weather.ui.util.geolocalizationModule
 
 val appModule = module {
     single<CounterRepository> { DbCounterRepository(get(), get()) }
     factory<SqlDriver> { DriverFactory().createDriver() }
-    includes(apiModule, storeModule)
+    includes(apiModule, storeModule, geolocalizationModule)
 }
 
 expect fun Module.contextModule(context: Context)

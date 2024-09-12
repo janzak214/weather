@@ -6,8 +6,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import model.CurrentWeather
 import model.DayWeather
-import model.LocationName
+import pl.janzak.weather.model.LocationName
 import model.WeatherCode
+import pl.janzak.weather.data.api.Coordinates
 import ui.components.WeatherOverviewCard
 
 val location = LocationName(
@@ -25,7 +26,8 @@ val currentWeather = CurrentWeather(
     windSpeed = 6.1,
     windDirection = 17.0,
     cloudCover = 80.0,
-    weatherCode = WeatherCode.RAIN_SLIGHT
+    weatherCode = WeatherCode.RAIN_SLIGHT,
+    coordinates = Coordinates(0.0, 0.0)
 )
 
 

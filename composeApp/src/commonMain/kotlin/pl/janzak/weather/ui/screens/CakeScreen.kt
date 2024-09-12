@@ -48,19 +48,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
-import com.skydoves.sandwich.suspendOnSuccess
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.Locator
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.request.parameter
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
@@ -69,9 +66,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import model.CurrentWeather
 import model.DayWeather
-import model.LocationName
+import pl.janzak.weather.model.LocationName
 import model.WeatherCode
 import org.koin.compose.koinInject
+import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.impl.extensions.get
 import pl.janzak.weather.data.api.Coordinates
 import pl.janzak.weather.data.api.GeocodingEntry
@@ -274,6 +272,10 @@ fun CakeScreen(
 //            }
 //        }
 //
+
+        val cw = location?.let { weatherStore.stream(StoreReadRequest.cached(it, true)) }
+        val x = cw?.map { println(it); it }?.collectAsStateWithLifecycle(null)
+
         LazyColumn(
             modifier = Modifier.semantics { traversalIndex = 1f }
                 .padding(16.dp)
@@ -295,8 +297,19 @@ fun CakeScreen(
                     )
                 }
             }
+
+            x?.value?.dataOrNull()?.let { w->
+
             items(40) {
-                WeatherOverviewCardPreview()
+                    WeatherOverviewCard(
+                        locationm,
+                        w,
+                        forecast,
+                        goToDetails = {},
+                        modifier = Modifier.padding(vertical = 4.dp).width(IntrinsicSize.Min)
+                            .widthIn(388.dp)
+                    )
+                }
             }
         }
 
@@ -305,7 +318,7 @@ fun CakeScreen(
 }
 
 
-val location = LocationName(
+val locationm = LocationName(
     name = "Bronowice Małe",
     region = "Kraków, Polska"
 )
@@ -384,13 +397,13 @@ val forecast = listOf(
     )
 )
 
-@Composable
-fun WeatherOverviewCardPreview() {
-    WeatherOverviewCard(
-        location,
-        currentWeather,
-        forecast,
-        goToDetails = {},
-        modifier = Modifier.padding(vertical = 4.dp).width(IntrinsicSize.Min).widthIn(388.dp)
-    )
-}
+//@Composable
+//fun WeatherOverviewCardPreview() {
+//    WeatherOverviewCard(
+//        locationn,
+//        currentWeather,
+//        forecast,
+//        goToDetails = {},
+//        modifier = Modifier.padding(vertical = 4.dp).width(IntrinsicSize.Min).widthIn(388.dp)
+//    )
+//}
