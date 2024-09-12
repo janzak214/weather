@@ -8,6 +8,7 @@ import org.koin.dsl.module
 
 private const val NOMINATIM_URL = "https://nominatim.openstreetmap.org"
 private const val OPENMETEO_GEOCODING_URL = "https://geocoding-api.open-meteo.com"
+private const val OPENMETEO_WEATHER_URL = "https://api.open-meteo.com"
 
 val apiModule = module {
     single<HttpClient> {
@@ -22,5 +23,8 @@ val apiModule = module {
     }
     single<OpenMeteoGeocodingApi> {
         OpenMeteoGeocodingApi(OPENMETEO_GEOCODING_URL, get())
+    }
+    single<OpenMeteoWeatherApi> {
+        OpenMeteoWeatherApi(OPENMETEO_WEATHER_URL, get())
     }
 }

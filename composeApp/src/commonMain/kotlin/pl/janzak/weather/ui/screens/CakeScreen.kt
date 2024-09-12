@@ -76,6 +76,7 @@ import pl.janzak.weather.data.api.Coordinates
 import pl.janzak.weather.data.api.GeocodingEntry
 import pl.janzak.weather.data.api.NominatimApi
 import pl.janzak.weather.data.api.OpenMeteoGeocodingApi
+import pl.janzak.weather.data.api.OpenMeteoWeatherApi
 import ui.components.WeatherOverviewCard
 
 
@@ -103,6 +104,7 @@ fun CakeScreen(
     modifier: Modifier = Modifier,
     nominatimApi: NominatimApi = koinInject(),
     openMeteoGeocodingApi: OpenMeteoGeocodingApi = koinInject(),
+    openMeteoWeatherApi: OpenMeteoWeatherApi = koinInject(),
 ) {
     var location: Coordinates? by remember { mutableStateOf(null) }
 
@@ -125,6 +127,14 @@ fun CakeScreen(
                 openMeteoGeocodingApi.geocode(text, language = language)
                     .onSuccess { entries = data.results ?: emptyList() }
             }
+        }
+    }
+
+    LaunchedEffect(location) {
+        location?.let {
+            println(openMeteoWeatherApi.currentWeather(it))
+            println(openMeteoWeatherApi.dailyForecast(it))
+            println(openMeteoWeatherApi.hourlyForecast(it))
         }
     }
 
