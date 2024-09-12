@@ -72,11 +72,13 @@ import model.DayWeather
 import model.LocationName
 import model.WeatherCode
 import org.koin.compose.koinInject
+import org.mobilenativefoundation.store.store5.impl.extensions.get
 import pl.janzak.weather.data.api.Coordinates
 import pl.janzak.weather.data.api.GeocodingEntry
 import pl.janzak.weather.data.api.NominatimApi
 import pl.janzak.weather.data.api.OpenMeteoGeocodingApi
 import pl.janzak.weather.data.api.OpenMeteoWeatherApi
+import pl.janzak.weather.data.store.WeatherStoreProvider
 import ui.components.WeatherOverviewCard
 
 
@@ -105,6 +107,7 @@ fun CakeScreen(
     nominatimApi: NominatimApi = koinInject(),
     openMeteoGeocodingApi: OpenMeteoGeocodingApi = koinInject(),
     openMeteoWeatherApi: OpenMeteoWeatherApi = koinInject(),
+    weatherStoreProvider: WeatherStoreProvider = koinInject()
 ) {
     var location: Coordinates? by remember { mutableStateOf(null) }
 
@@ -130,11 +133,14 @@ fun CakeScreen(
         }
     }
 
+    val weatherStore = weatherStoreProvider.current()
+
     LaunchedEffect(location) {
         location?.let {
             println(openMeteoWeatherApi.currentWeather(it))
             println(openMeteoWeatherApi.dailyForecast(it))
             println(openMeteoWeatherApi.hourlyForecast(it))
+            println(weatherStore.get(it))
         }
     }
 
@@ -149,8 +155,8 @@ fun CakeScreen(
                         is GeolocatorResult.Error -> Unit
                         is GeolocatorResult.Success -> {
                             location = Coordinates(
-                                locationResponse.data.coordinates.latitude.toFloat(),
-                                locationResponse.data.coordinates.longitude.toFloat()
+                                locationResponse.data.coordinates.latitude,
+                                locationResponse.data.coordinates.longitude
                             )
                             nominatimApi.reverseGeocode(location!!, language = language)
                                 .onSuccess { text = data.name }
@@ -305,6 +311,7 @@ val location = LocationName(
 )
 
 val currentWeather = CurrentWeather(
+    coordinates = Coordinates(0.0, 0.0),
     time = LocalDateTime(2024, 9, 11, 14, 0, 0),
     temperature = 29.42,
     apparentTemperature = 20.24,

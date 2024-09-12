@@ -175,7 +175,7 @@ compose.resources {
 sqldelight {
     databases {
         create("Database") {
-            packageName = "pl.janzak.weather"
+            packageName = "pl.janzak.weather.database"
         }
     }
 }

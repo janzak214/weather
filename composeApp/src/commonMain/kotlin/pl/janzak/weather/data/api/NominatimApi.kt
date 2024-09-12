@@ -9,9 +9,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Coordinates(
-    val latitude: Float,
-    val longitude: Float
-)
+    val latitude: Double,
+    val longitude: Double,
+) {
+    override fun toString() = "$latitude;$longitude"
+
+    companion object {
+        fun parse(value: String): Coordinates {
+            val split = value.split(";")
+            return Coordinates(split[0].toDouble(), split[1].toDouble())
+        }
+    }
+}
 
 @Serializable
 data class ReverseGeocodingResponse(val name: String)

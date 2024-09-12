@@ -31,7 +31,7 @@ enum class WeatherCode(val code: Int) {
     THUNDERSTORM_HEAVY_HAIL(99);
 
     companion object {
-        private val codeToEnum = entries.associate { it.code to it.name }
+        private val codeToEnum = entries.associateBy { it.code }
 
         fun get(code: Int) = codeToEnum[code]
     }

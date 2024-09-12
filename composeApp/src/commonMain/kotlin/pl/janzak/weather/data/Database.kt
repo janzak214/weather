@@ -1,4 +1,4 @@
-package data
+package pl.janzak.weather.data
 
 import app.cash.sqldelight.db.SqlDriver
 

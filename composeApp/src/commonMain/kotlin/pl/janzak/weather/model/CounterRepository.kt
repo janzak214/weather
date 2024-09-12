@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.serialization.Serializable
 import model.mapState
 
-import pl.janzak.weather.Database
+import pl.janzak.weather.database.Database
 
 @JvmInline
 @Serializable

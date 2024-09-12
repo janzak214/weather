@@ -13,8 +13,8 @@ data class GeocodingResponse(val results: List<GeocodingEntry>? = null)
 @Serializable
 data class GeocodingEntry(
     val name: String,
-    val latitude: Float,
-    val longitude: Float,
+    val latitude: Double,
+    val longitude: Double,
     val country: String = "",
 )
 

@@ -11,6 +11,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CurrentWeatherResponse(
+    val latitude: Double,
+    val longitude: Double,
     val timezone: String,
     val current: CurrentWeather,
 )
@@ -32,6 +34,8 @@ data class CurrentWeather(
 
 @Serializable
 data class DailyForecastResponse(
+    val latitude: Double,
+    val longitude: Double,
     val timezone: String,
     val daily: DailyForecast,
 )
@@ -51,6 +55,8 @@ data class DailyForecast(
 
 @Serializable
 data class HourlyForecastResponse(
+    val latitude: Double,
+    val longitude: Double,
     val timezone: String,
     val hourly: HourlyForecast,
 )

@@ -7,14 +7,16 @@ import navigation.AppNavHost
 import org.koin.compose.KoinApplication
 import org.koin.dsl.module
 import ui.theme.AppTheme
-import data.DriverFactory
+import pl.janzak.weather.data.DriverFactory
 import pl.janzak.weather.model.DbCounterRepository
 import org.koin.core.module.Module
 import pl.janzak.weather.data.api.apiModule
+import pl.janzak.weather.data.store.storeModule
 
 val appModule = module {
     single<CounterRepository> { DbCounterRepository(get(), get()) }
     factory<SqlDriver> { DriverFactory().createDriver() }
+    includes(apiModule, storeModule)
 }
 
 expect fun Module.contextModule(context: Context)
@@ -32,7 +34,6 @@ fun App() {
     KoinApplication(application = {
         modules(
             appModule,
-            apiModule,
             module {
                 single<CoroutineScope> { coroutineScope }
                 contextModule(context)

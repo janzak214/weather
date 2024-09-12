@@ -1,8 +1,8 @@
-package data
+package pl.janzak.weather.data
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import pl.janzak.weather.Database
+import pl.janzak.weather.database.Database
 import java.util.Properties
 
 actual class DriverFactory {
