@@ -6,22 +6,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import pl.janzak.weather.model.Coordinates
 
-
-@Serializable
-data class Coordinates(
-    val latitude: Double,
-    val longitude: Double,
-) {
-    override fun toString() = "%.2f;%.2f".format(latitude, longitude).replace(',', '.')
-
-    companion object {
-        fun parse(value: String): Coordinates {
-            val split = value.split(";")
-            return Coordinates(split[0].toDouble(), split[1].toDouble())
-        }
-    }
-}
 
 @Serializable
 data class ReverseGeocodingResponse(

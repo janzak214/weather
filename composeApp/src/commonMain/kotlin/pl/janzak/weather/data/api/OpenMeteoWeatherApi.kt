@@ -9,6 +9,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import pl.janzak.weather.model.Coordinates
 
 @Serializable
 data class CurrentWeatherResponse(

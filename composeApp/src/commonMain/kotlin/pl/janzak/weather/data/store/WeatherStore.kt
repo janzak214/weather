@@ -6,23 +6,24 @@ import com.skydoves.sandwich.getOrThrow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
-import model.WeatherCode
+import pl.janzak.weather.model.WeatherCode
 import org.mobilenativefoundation.store.store5.Converter
 import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Store
 import org.mobilenativefoundation.store.store5.StoreBuilder
 import pl.janzak.weather.database.Database
-import pl.janzak.weather.data.api.Coordinates
+import pl.janzak.weather.model.Coordinates
 import pl.janzak.weather.data.api.CurrentWeatherResponse
 import pl.janzak.weather.data.api.OpenMeteoWeatherApi
+import pl.janzak.weather.model.CurrentWeather
 import pl.janzak.weather.database.CurrentWeather as DbCurrentWeather
 
 class WeatherStoreProvider(
     private val openMeteoWeatherApi: OpenMeteoWeatherApi,
     private val database: Database,
 ) {
-    fun current(): Store<Coordinates, model.CurrentWeather> {
+    fun current(): Store<Coordinates, CurrentWeather> {
         val fetcher: Fetcher<Coordinates, CurrentWeatherResponse> = Fetcher.of {
             println("XXX fetching")
             openMeteoWeatherApi.currentWeather(
@@ -30,8 +31,8 @@ class WeatherStoreProvider(
             ).getOrThrow()
         }
 
-        val converter: Converter.Builder<CurrentWeatherResponse, DbCurrentWeather, model.CurrentWeather> =
-            Converter.Builder<CurrentWeatherResponse, DbCurrentWeather, model.CurrentWeather>()
+        val converter: Converter.Builder<CurrentWeatherResponse, DbCurrentWeather, CurrentWeather> =
+            Converter.Builder<CurrentWeatherResponse, DbCurrentWeather, CurrentWeather>()
                 .fromOutputToLocal { output ->
                     DbCurrentWeather(
                         coordinates = output.coordinates.toString(),
@@ -65,7 +66,7 @@ class WeatherStoreProvider(
                         weatherCode = network.current.weatherCode.toLong(),
                     )
                 }
-        val sourceOfTruth2: SourceOfTruth<Coordinates, CurrentWeatherResponse, model.CurrentWeather> =
+        val sourceOfTruth2: SourceOfTruth<Coordinates, CurrentWeatherResponse, CurrentWeather> =
             SourceOfTruth.of(
                 reader = {
                     println("XXX reading $it")
@@ -76,7 +77,7 @@ class WeatherStoreProvider(
                             if (local == null) {
                                 null
                             } else {
-                                model.CurrentWeather(
+                                CurrentWeather(
                                     coordinates = Coordinates.parse(local.coordinates),
                                     time = LocalDateTime.parse(local.time),
                                     temperature = local.temperature,

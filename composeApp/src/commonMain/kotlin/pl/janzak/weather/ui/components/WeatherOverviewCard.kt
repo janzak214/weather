@@ -40,8 +40,8 @@ import compose.icons.weathericons.WindDeg
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DayOfWeekNames
-import model.CurrentWeather
-import model.DayWeather
+import pl.janzak.weather.model.CurrentWeather
+import pl.janzak.weather.model.DayWeather
 import pl.janzak.weather.model.LocationName
 import org.jetbrains.compose.resources.stringResource
 import resources.Res

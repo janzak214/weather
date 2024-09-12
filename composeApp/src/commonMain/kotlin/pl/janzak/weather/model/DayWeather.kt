@@ -1,4 +1,4 @@
-package model
+package pl.janzak.weather.model
 
 import kotlinx.datetime.LocalDate
 

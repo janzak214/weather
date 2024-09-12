@@ -30,7 +30,7 @@ import compose.icons.weathericons.NightAltSprinkle
 import compose.icons.weathericons.NightAltThunderstorm
 import compose.icons.weathericons.NightClear
 import compose.icons.weathericons.NightFog
-import model.WeatherCode
+import pl.janzak.weather.model.WeatherCode
 
 private val codeToIconMap = buildMap {
     put(WeatherCode.CLEAR to true, WeatherIcons.DaySunny)

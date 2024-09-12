@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +57,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.materialkolor.ktx.toColor
+import com.materialkolor.ktx.toHct
 import com.skydoves.sandwich.getOrThrow
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
@@ -72,20 +75,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import model.CurrentWeather
-import model.DayWeather
 import pl.janzak.weather.model.LocationName
-import model.WeatherCode
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import pl.janzak.weather.data.api.Coordinates
+import pl.janzak.weather.model.Coordinates
 import pl.janzak.weather.data.api.NominatimApi
 import pl.janzak.weather.data.api.OpenMeteoGeocodingApi
 import pl.janzak.weather.data.api.OpenMeteoWeatherApi
 import pl.janzak.weather.database.Database
 import pl.janzak.weather.model.FavoriteLocation
 import pl.janzak.weather.model.LocationInfo
+import pl.janzak.weather.ui.util.currentWeatherResponseToModel
+import pl.janzak.weather.ui.util.dailyForecastResponseToModel
 import resources.Res
 import resources.search_field_label
 import ui.components.WeatherOverviewCard
@@ -147,7 +149,8 @@ fun Search(
                         var buttonOn by remember { mutableStateOf(false) }
                         val color by animateColorAsState(
                             targetValue = if (buttonOn) {
-                                MaterialTheme.colorScheme.tertiary
+                                MaterialTheme.colorScheme.tertiary.toHct().withChroma(120.0)
+                                    .withTone(60.0).toColor()
                             } else {
                                 IconButtonDefaults.iconButtonColors().contentColor
                             },
@@ -159,6 +162,7 @@ fun Search(
                         )
                         IconButton(onClick = {
                             buttonOn = true
+                            searchingForLocation = true
                             handleGeolocalization { searchingForLocation = false; openLocation(it) }
                         }, colors = IconButtonDefaults.iconButtonColors(contentColor = color)) {
                             Icon(
@@ -197,7 +201,7 @@ fun Search(
 
 @Composable
 fun MainView(
-    favorites: List<FavoriteLocation>,
+    favorites: List<FavoriteLocation>?,
     locations: List<LocationInfo>,
     fetchLocations: (String) -> Unit,
     handleGeolocalization: (done: (LocationInfo) -> Unit) -> Unit,
@@ -215,6 +219,15 @@ fun MainView(
                 openLocation,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
+
+            if (favorites == null) {
+                Box(
+                    modifier = Modifier.matchParentSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                return@Box
+            }
+
             LazyColumn(
                 modifier = Modifier.semantics { traversalIndex = 1f }
                     .padding(16.dp)
@@ -273,32 +286,11 @@ class MainScreenViewModel : ViewModel(), KoinComponent {
                                     region = it.region,
                                 ),
                             ),
-                            currentWeather = currentDeferred.await().getOrThrow().run {
-                                CurrentWeather(
-                                    coordinates = coordinates,
-                                    time = current.time,
-                                    temperature = current.temperature2m,
-                                    apparentTemperature = current.apparentTemperature,
-                                    relativeHumidity = current.relativeHumidity2m,
-                                    isDay = current.isDay == 1,
-                                    surfacePressure = current.surfacePressure,
-                                    windSpeed = current.windSpeed10m,
-                                    windDirection = current.windDirection10m,
-                                    cloudCover = current.cloudCover,
-                                    weatherCode = WeatherCode.get(current.weatherCode)!!,
-                                )
+                            currentWeather = currentDeferred.await().getOrThrow().let { response ->
+                                currentWeatherResponseToModel(response, coordinates)
                             },
-                            forecast = dailyDeferred.await().getOrThrow().run {
-                                daily.time.mapIndexed { i, date ->
-                                    DayWeather(
-                                        date = date,
-                                        temperatureMin = daily.temperature2mMin[i],
-                                        temperatureMax = daily.temperature2mMax[i],
-                                        precipitation = daily.precipitationSum[i],
-                                        precipitationProbability = daily.precipitationProbabilityMax[i],
-                                        weatherCode = WeatherCode.get(daily.weatherCode[i])!!,
-                                    )
-                                }
+                            forecast = dailyDeferred.await().getOrThrow().let { response ->
+                                dailyForecastResponseToModel(response)
                             }
                         )
                     }
@@ -372,7 +364,7 @@ fun MainScreen(
     modifier: Modifier = Modifier,
 ) {
 
-    val favorites = viewModel.favorites.collectAsStateWithLifecycle(emptyList())
+    val favorites = viewModel.favorites.collectAsStateWithLifecycle(null)
     val locations = viewModel.locations.collectAsStateWithLifecycle()
     val language = Locale.current.toLanguageTag()
     LaunchedEffect(language) { viewModel.setLanguage(language) }

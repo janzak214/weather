@@ -1,7 +1,6 @@
-package model
+package pl.janzak.weather.model
 
 import kotlinx.datetime.LocalDateTime
-import pl.janzak.weather.data.api.Coordinates
 
 data class CurrentWeather(
     val coordinates: Coordinates,

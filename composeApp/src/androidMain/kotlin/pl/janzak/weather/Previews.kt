@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import model.CurrentWeather
-import model.DayWeather
+import pl.janzak.weather.model.CurrentWeather
+import pl.janzak.weather.model.DayWeather
 import pl.janzak.weather.model.LocationName
-import model.WeatherCode
-import pl.janzak.weather.data.api.Coordinates
+import pl.janzak.weather.model.WeatherCode
+import pl.janzak.weather.model.Coordinates
 import ui.components.WeatherOverviewCard
 
 val location = LocationName(

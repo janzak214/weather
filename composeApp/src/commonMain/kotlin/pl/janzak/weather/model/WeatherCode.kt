@@ -1,4 +1,4 @@
-package model
+package pl.janzak.weather.model
 
 enum class WeatherCode(val code: Int) {
     CLEAR(0),
