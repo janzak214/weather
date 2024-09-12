@@ -155,6 +155,7 @@ compose.desktop {
             packageVersion = "1.0.0"
             windows {
                 includeAllModules = true
+                iconFile.set(File("composeApp/src/androidMain/res/mipmap-xxxhdpi/ic_launcher.png"))
             }
         }
     }
