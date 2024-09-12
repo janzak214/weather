@@ -10,6 +10,7 @@ import ui.theme.AppTheme
 import data.DriverFactory
 import pl.janzak.weather.model.DbCounterRepository
 import org.koin.core.module.Module
+import pl.janzak.weather.data.api.apiModule
 
 val appModule = module {
     single<CounterRepository> { DbCounterRepository(get(), get()) }
@@ -29,10 +30,13 @@ fun App() {
     val context = getContext()
 
     KoinApplication(application = {
-        modules(appModule, module {
-            single<CoroutineScope> { coroutineScope }
-            contextModule(context)
-        })
+        modules(
+            appModule,
+            apiModule,
+            module {
+                single<CoroutineScope> { coroutineScope }
+                contextModule(context)
+            })
     }) {
         AppTheme {
             AppNavHost()

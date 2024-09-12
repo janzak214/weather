@@ -46,7 +46,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onFailure
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.Locator
@@ -65,14 +71,13 @@ import model.CurrentWeather
 import model.DayWeather
 import model.LocationName
 import model.WeatherCode
+import org.koin.compose.koinInject
+import pl.janzak.weather.data.api.Coordinates
+import pl.janzak.weather.data.api.GeocodingEntry
+import pl.janzak.weather.data.api.NominatimApi
+import pl.janzak.weather.data.api.OpenMeteoGeocodingApi
 import ui.components.WeatherOverviewCard
 
-
-@Serializable
-data class Coordinates(
-    val latitude: Float,
-    val longitude: Float
-)
 
 @Serializable
 sealed class LocationResult {
@@ -89,53 +94,16 @@ sealed class LocationResult {
     ) : LocationResult()
 }
 
-suspend fun reverse(coordinates: Coordinates): ReverseGeocodingResponse {
-    val response = HttpClient().get("https://nominatim.openstreetmap.org/reverse") {
-        parameter("lat", coordinates.latitude)
-        parameter("lon", coordinates.longitude)
-        parameter("format", "jsonv2")
-        parameter("zoom", 12)
-        parameter("layer", "address")
-        parameter("accept-language", "en-US")
-    }
-
-    return format.decodeFromString(response.bodyAsText())
-}
-
-
-@Serializable
-data class ReverseGeocodingResponse(val name: String)
-
-@Serializable
-data class GeocodingResponse(val results: List<GeocodingEntry>? = null)
-
-@Serializable
-data class GeocodingEntry(
-    val name: String,
-    val latitude: Float,
-    val longitude: Float,
-    val country: String = "",
-)
-
-suspend fun geocode(query: String, count: Int = 10, language: String = "en"): GeocodingResponse {
-    val response =
-        HttpClient().get("https://geocoding-api.open-meteo.com/v1/search") {
-            parameter("name", query)
-            parameter("count", count)
-            parameter("language", language)
-            parameter("format", "json")
-        }
-
-    println(response.bodyAsText())
-
-    return format.decodeFromString<GeocodingResponse>(response.bodyAsText())
-}
 
 expect fun getLocator(): Locator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CakeScreen(modifier: Modifier = Modifier) {
+fun CakeScreen(
+    modifier: Modifier = Modifier,
+    nominatimApi: NominatimApi = koinInject(),
+    openMeteoGeocodingApi: OpenMeteoGeocodingApi = koinInject(),
+) {
     var location: Coordinates? by remember { mutableStateOf(null) }
 
     var text by remember { mutableStateOf("") }
@@ -148,11 +116,15 @@ fun CakeScreen(modifier: Modifier = Modifier) {
         Geolocator(locator)
     }
 
+    val language = Locale.current.toLanguageTag()
 
     LaunchedEffect(text) {
         withContext(Dispatchers.IO) {
-            if (text.isNotEmpty() && expanded)
-                entries = geocode(text).results ?: emptyList()
+            if (text.isNotEmpty() && expanded) {
+                println(language)
+                openMeteoGeocodingApi.geocode(text, language = language)
+                    .onSuccess { entries = data.results ?: emptyList() }
+            }
         }
     }
 
@@ -170,7 +142,10 @@ fun CakeScreen(modifier: Modifier = Modifier) {
                                 locationResponse.data.coordinates.latitude.toFloat(),
                                 locationResponse.data.coordinates.longitude.toFloat()
                             )
-                            text = reverse(location!!).name
+                            nominatimApi.reverseGeocode(location!!, language = language)
+                                .onSuccess { text = data.name }
+                                .onError { println(payload) }
+                                .onFailure { println(message()) }
                         }
                     }
                     searchingForLocation = false

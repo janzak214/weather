@@ -63,10 +63,15 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.sqldelight.coroutinesextensions)
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.client.json)
             implementation(libs.composeIcons.weatherIcons)
             implementation(libs.compass.geolocation)
             implementation(libs.kotlinx.datetime)
             implementation(libs.materialKolor)
+            implementation(libs.store5)
+            implementation(libs.sandwich)
+            implementation(libs.sandwich.ktor)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
