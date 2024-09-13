@@ -46,6 +46,7 @@ kotlin {
             implementation(libs.sqldelight.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.compass.geolocation.mobile)
+            implementation(libs.kotlinLogging.android)
         }
         commonMain.dependencies {
             implementation(compose.preview)
@@ -73,12 +74,15 @@ kotlin {
             implementation(libs.store5)
             implementation(libs.sandwich)
             implementation(libs.sandwich.ktor)
+            compileOnly(libs.kotlinLogging)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqldelight.sqlite)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.slf4j.simple)
+            implementation(libs.kotlinLogging.jvm)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

@@ -3,7 +3,7 @@ agp = "8.5.2"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.1"
+androidx-activityCompose = "1.9.2"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.1.4"
 androidx-core-ktx = "1.13.1"
@@ -20,16 +20,18 @@ kotlinx-datetime = "0.6.1"
 koin-bom = "4.0.0-RC1"
 lifecycle-viewmodel-compose = "2.8.0"
 robolectric = "4.13"
-uiTestJunit4Android = "1.7.0-rc01"
-uiTestManifest = "1.7.0-rc01"
+slf4j = "2.0.16"
+uiTestJunit4Android = "1.7.1"
+uiTestManifest = "1.7.1"
 sqldelight = "2.0.2"
 ktor = "2.3.12"
-uiTooling = "1.6.8"
+uiTooling = "1.7.1"
 composeIcons = "1.1.0"
 compass = "1.2.0"
 materialKolor = "1.7.0"
 store5 = "5.1.0-alpha04"
 sandwich = "2.0.9"
+kotlin-logging = "7.0.0"
 
 [libraries]
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -74,6 +76,10 @@ materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "ma
 store5 = { module = "org.mobilenativefoundation.store:store5", version.ref = "store5" }
 sandwich = { module = "com.github.skydoves:sandwich", version.ref = "sandwich" }
 sandwich-ktor = { module = "com.github.skydoves:sandwich-ktor", version.ref = "sandwich" }
+kotlinLogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+kotlinLogging-android = { module = "io.github.oshai:kotlin-logging-android", version.ref = "kotlin-logging" }
+kotlinLogging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
