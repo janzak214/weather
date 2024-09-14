@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Demo</string>
+    <string name="app_name">Pogoda</string>
     <string name="main_screen_title">Liczniki</string>
     <string name="main_screen_create_button">Utwórz nowy licznik</string>
     <string name="counter_edit_button">Edytuj</string>
@@ -20,4 +20,16 @@
     <string name="counter_dialog_create_text_field_label">Nazwa licznika</string>
     <string name="counter_dialog_create_confirm">Utwórz</string>
     <string name="counter_dialog_create_cancel">Anuluj</string>
+
+    <string name="weekday_abbreviation_1">pon.</string>
+    <string name="weekday_abbreviation_2">wt.</string>
+    <string name="weekday_abbreviation_3">śr.</string>
+    <string name="weekday_abbreviation_4">czw.</string>
+    <string name="weekday_abbreviation_5">pt.</string>
+    <string name="weekday_abbreviation_6">sob.</string>
+    <string name="weekday_abbreviation_7">niedz.</string>
+
+    <string name="label_apparent_temperature">odczuwalna</string>
+
+    <string name="search_field_label">Szukaj</string>
 </resources>

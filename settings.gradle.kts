@@ -1,4 +1,4 @@
-rootProject.name = "Demo"
+rootProject.name = "Weather"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

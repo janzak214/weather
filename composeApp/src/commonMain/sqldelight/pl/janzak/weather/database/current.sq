@@ -1,0 +1,27 @@
+CREATE TABLE currentWeather (
+    coordinates TEXT PRIMARY KEY NOT NULL,
+    time TEXT NOT NULL,
+    temperature REAL NOT NULL,
+    relativeHumidity REAL NOT NULL,
+    apparentTemperature REAL NOT NULL,
+    isDay INTEGER NOT NULL,
+    weatherCode INTEGER NOT NULL,
+    cloudCover REAL NOT NULL,
+    surfacePressure REAL NOT NULL,
+    windSpeed REAL NOT NULL,
+    windDirection REAL NOT NULL
+);
+
+loadCurrent:
+SELECT * FROM currentWeather WHERE coordinates = ?;
+
+insertCurrent:
+INSERT OR REPLACE INTO currentWeather VALUES ?;
+
+deleteCurrent:
+DELETE FROM currentWeather WHERE coordinates = ?;
+
+deleteAllCurrent:
+DELETE FROM currentWeather;
+
+
