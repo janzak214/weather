@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import compose.icons.WeatherIcons
 import compose.icons.weathericons.Cloudy
 import compose.icons.weathericons.DayCloudy
@@ -99,6 +100,9 @@ fun WeatherIcon(
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current
 ) {
-    val icon = remember(code, isDay) { codeToIconMap[code to isDay]!! }
+    val icon = remember(code, isDay) { getWeatherIcon(code, isDay) }
     Icon(icon, null, modifier = modifier, tint = tint)
 }
+
+fun getWeatherIcon(code: WeatherCode, isDay: Boolean): ImageVector =
+    codeToIconMap[code to isDay]!!
