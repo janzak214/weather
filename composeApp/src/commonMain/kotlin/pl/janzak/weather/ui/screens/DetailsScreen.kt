@@ -39,9 +39,8 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -60,12 +59,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.drawText
@@ -114,6 +115,7 @@ import pl.janzak.weather.database.Favorites
 import pl.janzak.weather.model.CurrentWeather
 import pl.janzak.weather.model.DayWeather
 import pl.janzak.weather.model.LocationInfo
+import pl.janzak.weather.model.WeatherCode
 import pl.janzak.weather.ui.util.Scale
 import pl.janzak.weather.ui.util.currentWeatherResponseToModel
 import pl.janzak.weather.ui.util.dailyForecastResponseToModel
@@ -128,6 +130,7 @@ import resources.weekday_abbreviation_5
 import resources.weekday_abbreviation_6
 import resources.weekday_abbreviation_7
 import ui.components.WeatherIcon
+import ui.components.getWeatherIcon
 import ui.util.LocalUnits
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -256,11 +259,10 @@ fun DetailsView(
                     }
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                IconToggleButton(
+                OutlinedIconToggleButton(
                     checked = !state.aggregate,
                     onCheckedChange = { setAggregate(!state.aggregate) },
                     content = { Icon(Icons.Default.StackedLineChart, null) },
-                    colors = IconButtonDefaults.outlinedIconToggleButtonColors(),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -288,6 +290,7 @@ fun DetailsView(
                 Plot(
                     data.hourly.values.map { it.temperature2m },
                     data.hourly.entries.map { state.selectedModels.contains(it.key) },
+                    data.hourly[Model.Hybrid]!!.weatherCode.map { WeatherCode.get(it.roundToInt())!! },
                     startDate = data.current.time.date,
                     scrollPosition = scrollState.value.toFloat(),
                     colors = modelLineColors,
@@ -355,6 +358,7 @@ fun DetailsView(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 
@@ -369,7 +373,8 @@ fun CurrentWeather(data: DetailsScreenData) {
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp).widthIn(max = 400.dp).fillMaxWidth()
+            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp).widthIn(max = 400.dp)
+            .fillMaxWidth()
     ) {
 
         Row(
@@ -479,6 +484,7 @@ fun CurrentWeather(data: DetailsScreenData) {
 fun Plot(
     temperatures: List<DoubleArray>,
     visibilities: List<Boolean>,
+    weatherCode: List<WeatherCode>,
     startDate: LocalDate,
     scrollPosition: Float,
     colors: List<Color>,
@@ -490,6 +496,7 @@ fun Plot(
     val gridColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val lineColor = MaterialTheme.colorScheme.tertiary
     val textColor = MaterialTheme.colorScheme.onTertiaryContainer
+    val iconColor = MaterialTheme.colorScheme.primary
     val textMeasurer = rememberTextMeasurer(cacheSize = 200)
     val minTemperature = remember(temperatures) { temperatures.minOf { it.min() } }.toFloat()
     val maxTemperature = remember(temperatures) { temperatures.maxOf { it.max() } }.toFloat()
@@ -499,6 +506,21 @@ fun Plot(
     val smallHourTickStyle = typography.labelSmall.copy(color = textColor.copy(alpha = 0.5f))
 
     val density = LocalDensity.current.density
+
+    val weatherIcons = remember(weatherCode) {
+        weatherCode.windowed(3, 3) { items ->
+            val counts = items.groupingBy { it }.eachCount()
+            counts.entries.maxByOrNull { it.value }!!.value
+        }
+        weatherCode.withIndex().filter { (i, _) ->
+            i % 6 == 0
+        }.map { (i, code) ->
+            code to (i % 24 == 6 || i % 24 == 12)
+        }
+    }
+    val iconPainters = weatherIcons.distinct().associate { (code, isDay) ->
+        (code to isDay) to rememberVectorPainter(getWeatherIcon(code, isDay))
+    }
 
     Spacer(
         modifier = Modifier
@@ -511,12 +533,14 @@ fun Plot(
                 val timeScale = Scale(0F..temperatures.first().size.toFloat(), 0F..size.width)
                 val dayTicks = timeScale.ticks(24F)
                 val hourTicks = timeScale.ticks(1F)
+                val topPlotOffset = 40F * density
                 val bottomPlotOffset = 60F * density
                 val yStep = 2F
 
                 val temperatureScale = Scale(
-                    minTemperature..maxTemperature, 0F..size.height - bottomPlotOffset,
-                    mapRange = { range.endInclusive - it }
+                    minTemperature..maxTemperature,
+                    0F..size.height - bottomPlotOffset - topPlotOffset,
+                    mapRange = { range.endInclusive - it + topPlotOffset }
                 ).nice(yStep)
                 val temperatureTicks = temperatureScale.ticks(yStep)
 
@@ -531,7 +555,7 @@ fun Plot(
                             )
                         }
 
-                        for (tick in hourTicks.dropLast(1)) {
+                        for (tick in hourTicks) {
                             val intTick = tick.roundToInt()
                             val xPosition = timeScale(tick)
 
@@ -547,6 +571,19 @@ fun Plot(
                                     end = Offset(xPosition - strokeWidth / 4, this.size.height),
                                     strokeWidth = strokeWidth
                                 )
+
+                                if (tick != hourTicks.last()) {
+                                    val icon = weatherIcons[intTick / 6]
+                                    val iconSize = 30 * density
+                                    with(iconPainters[icon]!!) {
+                                        translate(left = xPosition + iconSize / 2) {
+                                            draw(
+                                                Size(iconSize, iconSize),
+                                                colorFilter = ColorFilter.tint(iconColor)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -621,7 +658,7 @@ fun Plot(
                         }
 
                         inset {
-                            for (tick in dayTicks.dropLast(1)) {
+                            for (tick in dayTicks) {
                                 val xPosition = timeScale(tick + 12F)
                                 val text =
                                     (startDate + DatePeriod(days = (tick / 24).roundToInt())).toString()
@@ -636,7 +673,7 @@ fun Plot(
                             }
 
 
-                            for (tick in hourTicks.dropLast(1)) {
+                            for (tick in hourTicks) {
                                 val intTick = tick.roundToInt()
                                 if (intTick % 2 != 0) continue
 
@@ -669,7 +706,10 @@ fun Plot(
                                 endX = 30f * density
                             ),
                             topLeft = Offset(x = -30f * density, y = -15f * density),
-                            size = Size(width = 60f * density, height = size.height + 30f * density)
+                            size = Size(
+                                width = 60f * density,
+                                height = size.height + 30f * density
+                            )
                         )
 
                         for (temperature in temperatureTicks) {
@@ -711,7 +751,8 @@ data class DetailsScreenState(
     val aggregate: Boolean = true,
 )
 
-class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel(), KoinComponent {
+class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel(),
+    KoinComponent {
     private val _db: Database by inject()
     private val _weatherApi: OpenMeteoWeatherApi by inject()
 
@@ -778,7 +819,8 @@ class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel
 
                 val models = Model.entries.map {
                     async {
-                        it to _weatherApi.hourlyForecast(coordinates, it.key).getOrThrow().hourly
+                        it to _weatherApi.hourlyForecast(coordinates, it.key)
+                            .getOrThrow().hourly
                     }
                 }
 
