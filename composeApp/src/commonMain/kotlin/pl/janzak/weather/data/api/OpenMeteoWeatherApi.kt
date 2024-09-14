@@ -45,14 +45,44 @@ data class DailyForecastResponse(
 @Serializable
 data class DailyForecast(
     val time: List<LocalDate>,
-    @SerialName("weather_code") val weatherCode: List<Int>,
-    @SerialName("temperature_2m_max") val temperature2mMax: List<Double>,
-    @SerialName("temperature_2m_min") val temperature2mMin: List<Double>,
+    @SerialName("weather_code") val weatherCode: IntArray,
+    @SerialName("temperature_2m_max") val temperature2mMax: DoubleArray,
+    @SerialName("temperature_2m_min") val temperature2mMin: DoubleArray,
     val sunrise: List<LocalDateTime>,
     val sunset: List<LocalDateTime>,
-    @SerialName("precipitation_sum") val precipitationSum: List<Double>,
-    @SerialName("precipitation_probability_max") val precipitationProbabilityMax: List<Double>,
-)
+    @SerialName("precipitation_sum") val precipitationSum: DoubleArray,
+    @SerialName("precipitation_probability_max") val precipitationProbabilityMax: DoubleArray,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DailyForecast
+
+        if (time != other.time) return false
+        if (!weatherCode.contentEquals(other.weatherCode)) return false
+        if (!temperature2mMax.contentEquals(other.temperature2mMax)) return false
+        if (!temperature2mMin.contentEquals(other.temperature2mMin)) return false
+        if (sunrise != other.sunrise) return false
+        if (sunset != other.sunset) return false
+        if (!precipitationSum.contentEquals(other.precipitationSum)) return false
+        if (!precipitationProbabilityMax.contentEquals(other.precipitationProbabilityMax)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = time.hashCode()
+        result = 31 * result + weatherCode.contentHashCode()
+        result = 31 * result + temperature2mMax.contentHashCode()
+        result = 31 * result + temperature2mMin.contentHashCode()
+        result = 31 * result + sunrise.hashCode()
+        result = 31 * result + sunset.hashCode()
+        result = 31 * result + precipitationSum.contentHashCode()
+        result = 31 * result + precipitationProbabilityMax.contentHashCode()
+        return result
+    }
+}
 
 
 @Serializable
@@ -66,16 +96,50 @@ data class HourlyForecastResponse(
 @Serializable
 data class HourlyForecast(
     val time: List<LocalDateTime>,
-    @SerialName("temperature_2m") val temperature2m: List<Double>,
-    @SerialName("relative_humidity_2m") val relativeHumidity2m: List<Double>,
-    @SerialName("precipitation_probability") val precipitationProbability: List<Double>,
-    @SerialName("precipitation") val precipitation: List<Double>,
-    @SerialName("weather_code") val weatherCode: List<Double>,
-    @SerialName("surface_pressure") val surfacePressure: List<Double>,
-    @SerialName("cloud_cover") val cloudCover: List<Double>,
-    @SerialName("wind_speed_10m") val windSpeed10m: List<Double>,
-    @SerialName("wind_direction_10m") val windDirection10m: List<Double>,
-)
+    @SerialName("temperature_2m") val temperature2m: DoubleArray,
+    @SerialName("relative_humidity_2m") val relativeHumidity2m: DoubleArray,
+    @SerialName("precipitation_probability") val precipitationProbability: DoubleArray,
+    @SerialName("precipitation") val precipitation: DoubleArray,
+    @SerialName("weather_code") val weatherCode: DoubleArray,
+    @SerialName("surface_pressure") val surfacePressure: DoubleArray,
+    @SerialName("cloud_cover") val cloudCover: DoubleArray,
+    @SerialName("wind_speed_10m") val windSpeed10m: DoubleArray,
+    @SerialName("wind_direction_10m") val windDirection10m: DoubleArray,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as HourlyForecast
+
+        if (time != other.time) return false
+        if (!temperature2m.contentEquals(other.temperature2m)) return false
+        if (!relativeHumidity2m.contentEquals(other.relativeHumidity2m)) return false
+        if (!precipitationProbability.contentEquals(other.precipitationProbability)) return false
+        if (!precipitation.contentEquals(other.precipitation)) return false
+        if (!weatherCode.contentEquals(other.weatherCode)) return false
+        if (!surfacePressure.contentEquals(other.surfacePressure)) return false
+        if (!cloudCover.contentEquals(other.cloudCover)) return false
+        if (!windSpeed10m.contentEquals(other.windSpeed10m)) return false
+        if (!windDirection10m.contentEquals(other.windDirection10m)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = time.hashCode()
+        result = 31 * result + temperature2m.contentHashCode()
+        result = 31 * result + relativeHumidity2m.contentHashCode()
+        result = 31 * result + precipitationProbability.contentHashCode()
+        result = 31 * result + precipitation.contentHashCode()
+        result = 31 * result + weatherCode.contentHashCode()
+        result = 31 * result + surfacePressure.contentHashCode()
+        result = 31 * result + cloudCover.contentHashCode()
+        result = 31 * result + windSpeed10m.contentHashCode()
+        result = 31 * result + windDirection10m.contentHashCode()
+        return result
+    }
+}
 
 class OpenMeteoWeatherApi(private val baseUrl: String, private val client: HttpClient) {
     suspend fun currentWeather(

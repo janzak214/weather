@@ -182,12 +182,6 @@ fun Search(
                 ListItem(
                     headlineContent = { Text(entry.name.name) },
                     supportingContent = { Text(entry.name.region) },
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null
-                        )
-                    },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable {
                         expanded = false
