@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,14 +28,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,9 +57,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.drawText
@@ -67,6 +79,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.materialkolor.ktx.lighten
+import com.materialkolor.ktx.toColor
+import com.materialkolor.ktx.toHct
 import com.skydoves.sandwich.getOrThrow
 import compose.icons.WeatherIcons
 import compose.icons.weathericons.Barometer
@@ -74,19 +89,21 @@ import compose.icons.weathericons.Cloud
 import compose.icons.weathericons.Humidity
 import compose.icons.weathericons.Thermometer
 import compose.icons.weathericons.WindDeg
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DayOfWeekNames
+import kotlinx.datetime.plus
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -97,6 +114,7 @@ import pl.janzak.weather.database.Favorites
 import pl.janzak.weather.model.CurrentWeather
 import pl.janzak.weather.model.DayWeather
 import pl.janzak.weather.model.LocationInfo
+import pl.janzak.weather.ui.util.Scale
 import pl.janzak.weather.ui.util.currentWeatherResponseToModel
 import pl.janzak.weather.ui.util.dailyForecastResponseToModel
 import resources.Res
@@ -110,9 +128,10 @@ import resources.weekday_abbreviation_5
 import resources.weekday_abbreviation_6
 import resources.weekday_abbreviation_7
 import ui.components.WeatherIcon
-import ui.screens.Scale
 import ui.util.LocalUnits
+import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,6 +141,9 @@ fun DetailsView(
     isFavorite: Boolean,
     setFavorite: (Boolean) -> Unit,
     data: DetailsScreenData?,
+    state: DetailsScreenState,
+    selectModel: (Model, Boolean) -> Unit,
+    setAggregate: (Boolean) -> Unit,
 ) {
 
     Scaffold(topBar = {
@@ -184,38 +206,96 @@ fun DetailsView(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
         ) {
+            val hues = listOf(45.0, 135.0, 225.0, 315.0)
+            val modelLineColors = hues.map {
+                if (isSystemInDarkTheme()) {
+                    MaterialTheme.colorScheme.errorContainer.toHct().withHue(it).toColor()
+                        .lighten(2f)
+                } else {
+                    MaterialTheme.colorScheme.error.toHct().withHue(it).toColor().lighten(1.8f)
+                }
+            }
+            val modelTextColors = hues.map {
+                MaterialTheme.colorScheme.onErrorContainer.toHct().withHue(it).toColor()
+            }
+            val modelBackgroundColors = hues.map {
+                MaterialTheme.colorScheme.errorContainer.toHct().withHue(it).toColor()
+            }
+
             CurrentWeather(data)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                for (model in data.hourly.keys) {
-                    FilterChip(
-                        selected = false,
-                        onClick = {},
-                        label = { Text(model.modelName) },
-                        modifier = Modifier.padding(horizontal = 2.dp)
-                    )
-                }
-            }
+                Spacer(modifier = Modifier.width(8.dp))
+                Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                    data.hourly.keys.mapIndexed { index, model ->
+                        val selected = state.selectedModels.contains(model)
+                        FilterChip(
+                            selected = selected,
+                            onClick = { selectModel(model, !selected) },
+                            label = { Text(model.modelName) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = modelBackgroundColors[index],
+                                selectedLabelColor = modelTextColors[index]
+                            ),
+                            modifier = Modifier.padding(horizontal = 2.dp)
 
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                IconToggleButton(
+                    checked = !state.aggregate,
+                    onCheckedChange = { setAggregate(!state.aggregate) },
+                    content = { Icon(Icons.Default.StackedLineChart, null) },
+                    colors = IconButtonDefaults.outlinedIconToggleButtonColors(),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Spacer(modifier = Modifier.height(16.dp))
 
             val scrollState = rememberScrollState()
             var scrollbarTrackWidth by remember { mutableStateOf<Int?>(null) }
-            val ratio = remember(scrollState, scrollState.viewportSize, scrollState.maxValue) {
-                if (scrollbarTrackWidth != null) {
-                    scrollbarTrackWidth!!.toFloat() / (scrollState.viewportSize + scrollState.maxValue)
-                } else {
-                    1f
-                }
+            val ratio = if (scrollbarTrackWidth != null) {
+                scrollbarTrackWidth!!.toFloat() / (scrollState.viewportSize + scrollState.maxValue)
+            } else {
+                1f
             }
-            val boxWidth = remember(ratio, scrollState) {
-                (scrollState.viewportSize * ratio).roundToInt()
+
+            val boxWidth = (scrollState.viewportSize * ratio).roundToInt()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState),
+                contentAlignment = Alignment.Center,
+            ) {
+
+                Plot(
+                    data.hourly.values.map { it.temperature2m },
+                    data.hourly.entries.map { state.selectedModels.contains(it.key) },
+                    startDate = data.current.time.date,
+                    scrollPosition = scrollState.value.toFloat(),
+                    colors = modelLineColors,
+                    aggregate = state.aggregate,
+                )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Box(
                 modifier = Modifier
@@ -275,19 +355,6 @@ fun DetailsView(
                     }
                 }
             }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(scrollState),
-                contentAlignment = Alignment.Center,
-            ) {
-
-                for ((_, values) in data.hourly) {
-                    Plot(values.temperature2m)
-                }
-
-            }
         }
     }
 
@@ -302,7 +369,7 @@ fun CurrentWeather(data: DetailsScreenData) {
         ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp).widthIn(400.dp)
+            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp).widthIn(max = 400.dp).fillMaxWidth()
     ) {
 
         Row(
@@ -408,80 +475,219 @@ fun CurrentWeather(data: DetailsScreenData) {
     }
 }
 
-private val logger = KotlinLogging.logger {}
-
 @Composable
-fun Plot(yValues: DoubleArray, modifier: Modifier = Modifier) {
+fun Plot(
+    temperatures: List<DoubleArray>,
+    visibilities: List<Boolean>,
+    startDate: LocalDate,
+    scrollPosition: Float,
+    colors: List<Color>,
+    aggregate: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val background = MaterialTheme.colorScheme.background
     val typography = MaterialTheme.typography
-    val gridColor = MaterialTheme.colorScheme.tertiaryContainer
+    val gridColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val lineColor = MaterialTheme.colorScheme.tertiary
     val textColor = MaterialTheme.colorScheme.onTertiaryContainer
-    val textMeasurer = rememberTextMeasurer(cacheSize = 100)
+    val textMeasurer = rememberTextMeasurer(cacheSize = 200)
+    val minTemperature = remember(temperatures) { temperatures.minOf { it.min() } }.toFloat()
+    val maxTemperature = remember(temperatures) { temperatures.maxOf { it.max() } }.toFloat()
+
+    val dayLabelStyle = typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface)
+    val bigHourTickStyle = typography.labelMedium.copy(color = textColor)
+    val smallHourTickStyle = typography.labelSmall.copy(color = textColor.copy(alpha = 0.5f))
+
+    val density = LocalDensity.current.density
 
     Spacer(
         modifier = Modifier
             .padding(20.dp)
-            .requiredHeight(120.dp * 4)
+            .requiredHeight(120.dp * 2)
             .requiredWidth(240.dp * 7)
             .then(modifier)
 
             .drawWithCache {
-                val xStep = 24F
-                val xScale = Scale(0F..yValues.size.toFloat(), 0F..size.width)//.nice(xStep)
-                val xTicks = xScale.ticks(xStep)
+                val timeScale = Scale(0F..temperatures.first().size.toFloat(), 0F..size.width)
+                val dayTicks = timeScale.ticks(24F)
+                val hourTicks = timeScale.ticks(1F)
+                val bottomPlotOffset = 60F * density
+                val yStep = 2F
 
-                val yStep = 5F
-                val yScale = Scale(
-                    -20F..40F, 0F..size.height,
+                val temperatureScale = Scale(
+                    minTemperature..maxTemperature, 0F..size.height - bottomPlotOffset,
                     mapRange = { range.endInclusive - it }
                 ).nice(yStep)
-                val yTicks = yScale.ticks(yStep)
-
-                val rescaled = yValues.mapIndexed { index, value ->
-                    xScale(index.toFloat()) to yScale(value.toFloat())
-                }
-
-                val path = Path()
-                rescaled.firstOrNull()?.let {
-                    path.moveTo(it.first, it.second)
-                }
-                for (point in rescaled) {
-                    path.lineTo(point.first, point.second)
-                }
+                val temperatureTicks = temperatureScale.ticks(yStep)
 
                 onDrawBehind {
-                    for (yTick in yTicks) {
-                        val yPosition = yScale(yTick)
-
-                        for ((xTick, nextXTick) in xTicks.zipWithNext()) {
-                            val offset = 4F
-                            val xPosition = xScale(xTick)
-                            val nextXPosition = xScale(nextXTick)
+                    inset(left = 30f * density, right = 0f, top = 0f, bottom = 0f) {
+                        for (tick in temperatureTicks) {
+                            val yPosition = temperatureScale(tick)
                             drawLine(
-                                gridColor,
-                                Offset(xPosition + offset, yPosition),
-                                Offset(nextXPosition - offset, yPosition),
+                                color = gridColor,
+                                start = Offset(0f, yPosition),
+                                Offset(this.size.width, yPosition)
+                            )
+                        }
+
+                        for (tick in hourTicks.dropLast(1)) {
+                            val intTick = tick.roundToInt()
+                            val xPosition = timeScale(tick)
+
+                            if (intTick % 6 == 0) {
+                                val strokeWidth = if (intTick % 24 == 0) {
+                                    12f
+                                } else {
+                                    4f
+                                } * density
+                                drawLine(
+                                    color = background,
+                                    start = Offset(xPosition - strokeWidth / 4, -1f * density),
+                                    end = Offset(xPosition - strokeWidth / 4, this.size.height),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
+                        }
+
+                        if (aggregate) {
+                            val mean = temperatures[0].mapIndexed { index, _ ->
+                                temperatures
+                                    .filterIndexed { t, _ -> visibilities[t] }
+                                    .map { it[index] }.average()
+                            }
+                            val stddev = temperatures[0].mapIndexed { index, _ ->
+                                temperatures
+                                    .filterIndexed { t, _ -> visibilities[t] }
+                                    .map { (it[index] - mean[index]).pow(2) }.average()
+                                    .let { sqrt(it) }
+                            }
+
+                            val upperLine = Path().apply {
+                                fillType = PathFillType.NonZero
+
+                                mean.mapIndexed { hour, value ->
+                                    val x = timeScale(hour.toFloat())
+                                    val y =
+                                        temperatureScale(value.toFloat() - stddev[hour].toFloat())
+                                    if (hour == 0) {
+                                        moveTo(x, y)
+                                    } else {
+                                        lineTo(x, y)
+                                    }
+                                }
+
+                                mean.withIndex().reversed().map { (hour, value) ->
+                                    val x = timeScale(hour.toFloat())
+                                    val y =
+                                        temperatureScale(value.toFloat() + stddev[hour].toFloat())
+                                    lineTo(x, y)
+                                }
+                            }
+
+
+                            drawPath(upperLine, color = lineColor.copy(alpha = 0.2f))
+                            drawPoints(
+                                mean.mapIndexed { hour, value ->
+                                    Offset(
+                                        timeScale(hour.toFloat()),
+                                        temperatureScale(value.toFloat())
+                                    )
+                                },
+                                pointMode = PointMode.Polygon,
+                                cap = StrokeCap.Round,
+                                color = lineColor,
+                                strokeWidth = 2F * density,
                             )
 
+                        } else {
+                            temperatures.zip(visibilities)
+                                .mapIndexed { index, (temperature, visible) ->
+                                    if (visible) {
+                                        drawPoints(
+                                            temperature.mapIndexed { hour, value ->
+                                                Offset(
+                                                    timeScale(hour.toFloat()),
+                                                    temperatureScale(value.toFloat())
+                                                )
+                                            },
+                                            pointMode = PointMode.Polygon,
+                                            cap = StrokeCap.Round,
+                                            color = colors[index],
+                                            strokeWidth = 2F * density,
+                                        )
+                                    }
+                                }
+                        }
+
+                        inset {
+                            for (tick in dayTicks.dropLast(1)) {
+                                val xPosition = timeScale(tick + 12F)
+                                val text =
+                                    (startDate + DatePeriod(days = (tick / 24).roundToInt())).toString()
+                                val layoutResult = textMeasurer.measure(text, dayLabelStyle)
+                                drawText(
+                                    layoutResult,
+                                    topLeft = Offset(
+                                        xPosition - layoutResult.size.width / 2,
+                                        size.height - layoutResult.size.height
+                                    ),
+                                )
+                            }
+
+
+                            for (tick in hourTicks.dropLast(1)) {
+                                val intTick = tick.roundToInt()
+                                if (intTick % 2 != 0) continue
+
+                                val xPosition = timeScale(tick + 0.5F)
+
+                                val text = "%02d".format(intTick % 24)
+                                val layoutResult = textMeasurer.measure(
+                                    text, if (intTick % 6 == 0) {
+                                        bigHourTickStyle
+                                    } else {
+                                        smallHourTickStyle
+                                    }
+                                )
+                                drawText(
+                                    layoutResult,
+                                    topLeft = Offset(
+                                        xPosition - layoutResult.size.width,
+                                        size.height - layoutResult.size.height - 30f * density
+                                    ),
+                                )
+                            }
+                        }
+                    }
+
+                    translate(left = scrollPosition) {
+                        drawRect(
+                            brush = Brush.horizontalGradient(
+                                0.4f to background,
+                                1f to Color.Transparent,
+                                endX = 30f * density
+                            ),
+                            topLeft = Offset(x = -30f * density, y = -15f * density),
+                            size = Size(width = 60f * density, height = size.height + 30f * density)
+                        )
+
+                        for (temperature in temperatureTicks) {
+                            val xPosition = 0f
+                            val yPosition = temperatureScale(temperature)
+                            val tempText = temperature.roundToInt().toString() + "°C"
+                            val tempLayoutResult =
+                                textMeasurer.measure(tempText, smallHourTickStyle)
                             drawText(
-                                textMeasurer = textMeasurer,
-                                text = yTick.toString(),
-                                topLeft = Offset(xPosition, yPosition),
-                                style = typography.labelSmall.copy(color = textColor)
+                                tempLayoutResult,
+                                topLeft = Offset(
+                                    xPosition - tempLayoutResult.size.width / 2,
+                                    yPosition - tempLayoutResult.size.height / 2,
+                                ),
                             )
                         }
                     }
 
-
-//                            drawPath(path, color = lineColor, style = Stroke(width = 2F))
-                    drawPoints(
-                        rescaled.map { Offset(it.first, it.second) },
-                        pointMode = PointMode.Polygon,
-                        cap = StrokeCap.Round,
-                        color = lineColor,
-                        strokeWidth = 2F,
-//                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10F, 20F), 25F)
-                    )
                 }
             }
     )
@@ -500,6 +706,11 @@ data class DetailsScreenData(
     val hourly: Map<Model, HourlyForecast>,
 )
 
+data class DetailsScreenState(
+    val selectedModels: Set<Model> = setOf(Model.Hybrid, Model.Icon, Model.Gfs, Model.Ecmwf),
+    val aggregate: Boolean = true,
+)
+
 class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel(), KoinComponent {
     private val _db: Database by inject()
     private val _weatherApi: OpenMeteoWeatherApi by inject()
@@ -511,7 +722,8 @@ class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel
     private val _data = MutableStateFlow<DetailsScreenData?>(null)
     val data = _data.asStateFlow()
 
-    private val _selectedModels = MutableStateFlow<Set<String>>(emptySet())
+    private val _state = MutableStateFlow(DetailsScreenState())
+    val state = _state.asStateFlow()
 
     init {
         fetchData()
@@ -531,7 +743,25 @@ class DetailsScreenViewModel(private val locationInfo: LocationInfo) : ViewModel
         }
     }
 
-    fun fetchData() {
+    fun setAggregate(state: Boolean) {
+        _state.update { it.copy(aggregate = state) }
+    }
+
+    fun selectModel(model: Model, state: Boolean) {
+        _state.update {
+            it.copy(
+                selectedModels = if (state) {
+                    it.selectedModels.plusElement(model)
+                } else if (it.selectedModels.contains(model) && (it.selectedModels.size == 1)) {
+                    it.selectedModels
+                } else {
+                    it.selectedModels.minusElement(model)
+                }
+            )
+        }
+    }
+
+    private fun fetchData() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val coordinates = locationInfo.coordinates
@@ -573,6 +803,7 @@ fun DetailsScreen(
 
     val isFavorite = viewModel.isFavorite.collectAsStateWithLifecycle(false)
     val data = viewModel.data.collectAsStateWithLifecycle()
+    val state = viewModel.state.collectAsStateWithLifecycle()
 
     DetailsView(
         goBack = goBack,
@@ -580,6 +811,9 @@ fun DetailsScreen(
         isFavorite = isFavorite.value,
         setFavorite = viewModel::setFavorite,
         data = data.value,
+        state = state.value,
+        selectModel = viewModel::selectModel,
+        setAggregate = viewModel::setAggregate,
     )
 }
 

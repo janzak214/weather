@@ -8,8 +8,26 @@ import dev.jordond.compass.geolocation.exception.GeolocationException
 import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import ui.screens.LocationResult
+import pl.janzak.weather.model.Coordinates
+
+
+@Serializable
+sealed class LocationResult {
+    @Serializable
+    @SerialName("success")
+    data class Success(
+        val result: Coordinates
+    ) : LocationResult()
+
+    @Serializable
+    @SerialName("error")
+    data class Error(
+        val message: String
+    ) : LocationResult()
+}
 
 
 fun getLocation(): LocationResult {
