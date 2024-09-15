@@ -28,14 +28,19 @@ jobs:
     - name: Build Android
       run: ./gradlew :composeApp:assembleRelease
     - name: Build Desktop
-      run: ./gradlew :composeApp:createReleaseDistributable
+      run: ./gradlew :composeApp:packageReleaseMsi
+    - name: Rename outputs
+      run: |
+        mkdir release
+        mv composeApp/build/outputs/apk/release/*.apk release/weather-nightly.apk
+        mv composeApp/build/compose/binaries/main-release/msi/*.msi release/weather-nightly.msi
     - name: Release nightly
       uses: softprops/action-gh-release@v1
       with:
         prerelease: true
-        name: Latest
-        tag_name: latest
+        name: Nightly
+        tag_name: nightly
         files: |
           composeApp/build/outputs/apk/release/*.apk
-          composeApp/build/compose/binaries/main-release/**/*
+          composeApp/build/compose/binaries/main-release/msi/*.msi
         fail_on_unmatched_files: true

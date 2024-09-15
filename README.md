@@ -8,4 +8,6 @@ A simple weather app made with [Compose Multiplatform](https://www.jetbrains.com
 
 ## Installing
 
-...
+- [Android](../../releases/download/nightly/weather-nightly.apk)
+- [Windows](../../releases/download/nightly/weather-nightly.msi)
+
