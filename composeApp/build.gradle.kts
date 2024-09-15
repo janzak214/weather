@@ -168,6 +168,12 @@ compose.desktop {
                 includeAllModules = true
                 iconFile.set(File("composeApp/src/androidMain/res/mipmap-xxxhdpi/ic_launcher.png"))
             }
+
+            buildTypes {
+                release {
+                    proguard.isEnabled = false
+                }
+            }
         }
     }
 }
