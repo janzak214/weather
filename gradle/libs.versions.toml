@@ -32,6 +32,8 @@ materialKolor = "1.7.0"
 store5 = "5.1.0-alpha04"
 sandwich = "2.0.9"
 kotlin-logging = "7.0.0"
+appdirs = "1.2.2"
+androidx-core-splashscreen = "1.0.1"
 
 [libraries]
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
@@ -80,6 +82,8 @@ kotlinLogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotl
 kotlinLogging-android = { module = "io.github.oshai:kotlin-logging-android", version.ref = "kotlin-logging" }
 kotlinLogging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

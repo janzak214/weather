@@ -31,9 +31,9 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
         val desktopTest by getting
@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.kotlinLogging.android)
+            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.preview)
@@ -83,6 +84,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.slf4j.simple)
             implementation(libs.kotlinLogging.jvm)
+            implementation(libs.appdirs)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -162,11 +164,28 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "pl.janzak.weather"
+            packageName = "Weather"
             packageVersion = "1.0.0"
+            vendor = "Jan Zakrzewski"
+
             windows {
+                installationPath = "pl.janzak.weather"
                 includeAllModules = true
-                iconFile.set(File("composeApp/src/androidMain/res/mipmap-xxxhdpi/ic_launcher.png"))
+                iconFile.set(projectDir.parentFile.resolve("images/icon-rounded.ico"))
+                dirChooser = true
+                perUserInstall = true
+                upgradeUuid = "17764e10-9057-426b-989b-4c198312cf02"
+                menu = true
+                shortcut = true
+                console = true
+            }
+
+            buildTypes {
+                release {
+                    proguard {
+                        isEnabled = false
+                    }
+                }
             }
 
             buildTypes {

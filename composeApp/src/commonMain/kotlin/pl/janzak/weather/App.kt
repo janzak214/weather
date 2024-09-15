@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import navigation.AppNavHost
 import org.koin.compose.KoinApplication
 import org.koin.dsl.module
-import ui.theme.AppTheme
+import pl.janzak.weather.ui.theme.AppTheme
 import pl.janzak.weather.data.DriverFactory
 import org.koin.core.module.Module
 import pl.janzak.weather.data.api.apiModule
