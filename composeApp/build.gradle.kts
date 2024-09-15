@@ -120,6 +120,16 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    applicationVariants.configureEach {
+        val variant = name
+        val version = versionName
+
+        outputs.configureEach {
+            if (this is ApkVariantOutputImpl) {
+                outputFileName = "weather-${variant}-$version.apk"
+            }
+        }
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"

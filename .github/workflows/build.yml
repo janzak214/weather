@@ -25,18 +25,16 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Build with Gradle
+    - name: Build Android
       run: ./gradlew :composeApp:assembleRelease
-    - name: Build with Gradle
+    - name: Build Desktop
       run: ./gradlew :composeApp:createReleaseDistributable
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+    - name: Release nightly
+      uses: softprops/action-gh-release@v1
       with:
-          name: Release APK
-          path: composeApp/build/outputs/apk/release/
-    - name: Upload desktop
-      uses: actions/upload-artifact@v4
-      with:
-          name: Release desktop
-          path: composeApp/build/compose/binaries/main-release/
-          
+        prerelease: true
+        name: Latest
+        files: |
+          composeApp/build/outputs/apk/release/*.apk
+          composeApp/build/compose/binaries/main-release/msi/*.msi
+        fail_on_unmatched_files: true
