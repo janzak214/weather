@@ -1,3 +1,8 @@
+<center>
+  <img src="images/icon-rounded.svg" width="100">
+</center>
+<br>
+
 This is a Kotlin Multiplatform project targeting Android, Desktop.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
