@@ -34,6 +34,7 @@ jobs:
       with:
         prerelease: true
         name: Latest
+        tag: latest
         files: |
           composeApp/build/outputs/apk/release/*.apk
           composeApp/build/compose/binaries/main-release/msi/*.msi
