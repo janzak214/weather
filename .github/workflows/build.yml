@@ -1,0 +1,42 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-read-only: false
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+    - name: Build with Gradle
+      run: ./gradlew :composeApp:assembleRelease
+    - name: Build with Gradle
+      run: ./gradlew :composeApp:createReleaseDistributable
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+          name: Release APK
+          path: composeApp/build/outputs/apk/release/
+    - name: Upload desktop
+      uses: actions/upload-artifact@v4
+      with:
+          name: Release desktop
+          path: composeApp/build/compose/binaries/main-release/
+          
