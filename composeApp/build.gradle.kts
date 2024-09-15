@@ -187,12 +187,6 @@ compose.desktop {
                     }
                 }
             }
-
-            buildTypes {
-                release {
-                    proguard.isEnabled = false
-                }
-            }
         }
     }
 }
