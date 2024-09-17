@@ -1,4 +1,4 @@
-package pl.janzak.weather.model
+package pl.janzak.weather.ui.util
 
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
