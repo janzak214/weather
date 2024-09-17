@@ -4,28 +4,18 @@ android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.9.2"
-androidx-appcompat = "1.7.0"
-androidx-constraintlayout = "2.1.4"
-androidx-core-ktx = "1.13.1"
-androidx-espresso-core = "3.6.1"
-androidx-material = "1.12.0"
-androidx-test-junit = "1.2.1"
 compose-plugin = "1.7.0-alpha03"
-junit = "4.13.2"
 kotlin = "2.0.0"
+logbackAndroid = "3.0.0"
 navigationCompose = "2.8.0-alpha09"
 kotlinx-serialization = "1.7.1"
 kotlinx-coroutines = "1.9.0-RC"
 kotlinx-datetime = "0.6.1"
-koin-bom = "4.0.0-RC1"
+koin-bom = "4.0.0-RC2"
 lifecycle-viewmodel-compose = "2.8.0"
-robolectric = "4.13"
 slf4j = "2.0.16"
-uiTestJunit4Android = "1.7.1"
-uiTestManifest = "1.7.1"
 sqldelight = "2.0.2"
 ktor = "2.3.12"
-uiTooling = "1.7.1"
 composeIcons = "1.1.0"
 compass = "1.2.0"
 materialKolor = "1.7.0"
@@ -36,19 +26,9 @@ appdirs = "1.2.2"
 androidx-core-splashscreen = "1.0.1"
 
 [libraries]
-androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
-androidx-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
-#kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-common = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref = "kotlin" }
 kotlin-test-annotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-#androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
-#androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
-#androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
-#androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
-#androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
-#androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -60,17 +40,15 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-bom" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-bom" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-bom" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-coroutinesextensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 composeIcons-weatherIcons = { module = "br.com.devsrsouza.compose.icons:erikflowers-weather-icons", version.ref = "composeIcons" }
 compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
 compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
@@ -81,9 +59,11 @@ sandwich-ktor = { module = "com.github.skydoves:sandwich-ktor", version.ref = "s
 kotlinLogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlinLogging-android = { module = "io.github.oshai:kotlin-logging-android", version.ref = "kotlin-logging" }
 kotlinLogging-jvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen"}
+logback-android = { module = "com.github.tony19:logback-android", version.ref = "logbackAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

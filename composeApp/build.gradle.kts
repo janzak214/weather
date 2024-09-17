@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -13,14 +14,6 @@ plugins {
     alias(libs.plugins.parcelize)
 }
 
-dependencies {
-    testImplementation(libs.androidx.ui.test.junit4.android)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
-    debugImplementation(libs.androidx.ui.tooling)
-}
-
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -30,6 +23,12 @@ kotlin {
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+    }
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
     jvm("desktop")
@@ -48,6 +47,8 @@ kotlin {
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.kotlinLogging.android)
             implementation(libs.androidx.core.splashscreen)
+            implementation(libs.logback.android)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.preview)
@@ -76,6 +77,7 @@ kotlin {
             implementation(libs.sandwich)
             implementation(libs.sandwich.ktor)
             compileOnly(libs.kotlinLogging)
+            implementation(libs.slf4j.api)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -120,6 +122,16 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    applicationVariants.configureEach {
+        val variant = name
+        val version = versionName
+
+        outputs.configureEach {
+            if (this is ApkVariantOutputImpl) {
+                outputFileName = "weather-${variant}-$version.apk"
+            }
+        }
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -140,20 +152,7 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
-    }
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-        managedDevices {
-            localDevices {
-                create("emulator") {
-                    device = "Pixel 7a"
-                    apiLevel = 34
-                    systemImageSource = "aosp-atd"
-                }
-            }
-        }
+//        debugImplementation(libs.androidx.ui.tooling)
     }
 }
 
@@ -176,7 +175,6 @@ compose.desktop {
                 upgradeUuid = "17764e10-9057-426b-989b-4c198312cf02"
                 menu = true
                 shortcut = true
-                console = true
             }
 
             buildTypes {

@@ -1,0 +1,44 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Build Android
+        run: ./gradlew :composeApp:assembleRelease
+      - name: Build Desktop
+        run: ./gradlew :composeApp:packageReleaseMsi
+      - name: Rename outputs
+        run: |
+          mkdir release
+          mv composeApp/build/outputs/apk/release/*.apk release/weather-nightly.apk
+          mv composeApp/build/compose/binaries/main-release/msi/*.msi release/weather-nightly.msi
+      - name: Release nightly
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          name: Nightly
+          tag_name: nightly
+          files: release/*
+          fail_on_unmatched_files: true
