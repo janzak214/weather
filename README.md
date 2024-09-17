@@ -14,12 +14,12 @@ Third-party APIs used: [Open-Meteo](https://open-meteo.com/) for weather data, [
 ## Screenshots
 
 <p align="center">
-    <a href="images/screenshot-1.webp"><img src="images/screenshot-1.webp#gh-light-mode-only" width="100" hspace="2"></a>
-    <a href="images/screenshot-1-night.webp"><img src="images/screenshot-1-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
-    <a href="images/screenshot-2.webp"><img src="images/screenshot-2.webp#gh-light-mode-only" width="100" hspace="2"></a>
-    <a href="images/screenshot-2-night.webp"><img src="images/screenshot-2-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
-    <a href="images/screenshot-3.webp"><img src="images/screenshot-3.webp#gh-light-mode-only" width="100" hspace="2"></a>
-    <a href="images/screenshot-3-night.webp"><img src="images/screenshot-3-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-1.webp#gh-light-mode-only" target="_blank"><img src="images/screenshot-1.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-1-night.webp#gh-dark-mode-only" target="_blank"><img src="images/screenshot-1-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-2.webp#gh-light-mode-only" target="_blank"><img src="images/screenshot-2.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-2-night.webp#gh-dark-mode-only" target="_blank"><img src="images/screenshot-2-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-3.webp#gh-light-mode-only" target="_blank"><img src="images/screenshot-3.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="../../raw/refs/heads/master/images/screenshot-3-night.webp#gh-dark-mode-only" target="_blank"><img src="images/screenshot-3-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
 </p>
 
 ## Installing
