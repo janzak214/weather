@@ -1,0 +1,5 @@
+<resources>
+    <string name="nominatim_url">https://nominatim.openstreetmap.org</string>
+    <string name="openmeteo_geocoding_url">https://geocoding-api.open-meteo.com</string>
+    <string name="openmeteo_weather_url">https://api.open-meteo.com</string>
+</resources>

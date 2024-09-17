@@ -1,0 +1,22 @@
+import androidx.compose.ui.text.AnnotationType.Url;
+import com.android.build.gradle.internal.dsl.decorator.SupportedPropertyType.Var.Int;
+import io.ktor.http.Headers;
+import io.ktor.http.HttpProtocolVersion;
+import io.ktor.util.date.GMTDate;
+import kotlin.String;
+import kotlin.collections.Map;
+
+CREATE TABLE IF NOT EXISTS cacheEntry (
+    url TEXT AS Url NOT NULL,
+    statusCode INTEGER AS Int NOT NULL,
+    statusDescription TEXT NOT NULL,
+    requestTime INTEGER AS GMTDate NOT NULL,
+    responseTime INTEGER AS GMTDate NOT NULL,
+    expires INTEGER AS GMTDate NOT NULL,
+    version TEXT AS HttpProtocolVersion NOT NULL,
+    varyKeys TEXT AS Map<String, String> NOT NULL,
+    headers TEXT AS Headers NOT NULL,
+    body BLOB NOT NULL,
+
+    PRIMARY KEY (url, varyKeys)
+);
