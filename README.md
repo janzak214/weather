@@ -1,11 +1,29 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop.
+<p align="center">
+  <img src="images/icon-rounded.svg" width="100">
+</p>
+<br>
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+A simple weather app made with [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/). Currently supports Android and Windows.
 
+## Features
+- display forecast for current location
+- compare different weather models
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Third-party APIs used: [Open-Meteo](https://open-meteo.com/) for weather data, [Nominatim](https://nominatim.org/) for reverse geocoding.
+
+## Screenshots
+
+<p align="center">
+    <a href="images/screenshot-1.webp"><img src="images/screenshot-1.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="images/screenshot-1-night.webp"><img src="images/screenshot-1-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+    <a href="images/screenshot-2.webp"><img src="images/screenshot-2.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="images/screenshot-2-night.webp"><img src="images/screenshot-2-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+    <a href="images/screenshot-3.webp"><img src="images/screenshot-3.webp#gh-light-mode-only" width="100" hspace="2"></a>
+    <a href="images/screenshot-3-night.webp"><img src="images/screenshot-3-night.webp#gh-dark-mode-only" width="100" hspace="2"></a>
+</p>
+
+## Installing
+
+Download latest builds:
+- Android: [weather-nightly.apk](../../releases/download/nightly/weather-nightly.apk)
+- Windows: [weather-nightly.msi](../../releases/download/nightly/weather-nightly.msi)
