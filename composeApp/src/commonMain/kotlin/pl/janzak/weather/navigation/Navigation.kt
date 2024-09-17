@@ -1,11 +1,9 @@
-package navigation
+package pl.janzak.weather.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
@@ -25,7 +23,7 @@ import pl.janzak.weather.model.LocationInfo
 import pl.janzak.weather.model.LocationName
 import pl.janzak.weather.ui.screens.DetailsScreen
 import pl.janzak.weather.ui.screens.MainScreen
-import ui.theme.Easing
+import pl.janzak.weather.ui.theme.Easing
 import kotlin.reflect.typeOf
 
 sealed class Route {
@@ -83,8 +81,6 @@ fun AppNavHost() {
                 exitTransition = { ExitTransition.None }
             ) {
                 MainScreen(openLocation = {
-
-//                    navController.navigate(Route.Details(it))
                     navController.navigate(Route.Details(Json.encodeToString(it)))
                 })
             }
@@ -92,38 +88,16 @@ fun AppNavHost() {
                 typeMap = mapOf(typeOf<LocationInfo>() to locationInfoType),
                 enterTransition = {
                     if (destinationIncludesRoute(initialState.destination, Route.Main)) {
-                        fadeIn(
-                            animationSpec = tween(
-                                durationMillis = Easing.enterDuration,
-                                easing = Easing.emphasizedDecelerate
-                            )
-                        ) + slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                            animationSpec = tween(
-                                durationMillis = Easing.enterDuration,
-                                easing = Easing.emphasizedDecelerate
-                            )
-                        )
+                        fadeIn(Easing.enterTween())
                     } else {
-                        fadeIn()
+                        fadeIn(Easing.enterTween())
                     }
                 },
                 exitTransition = {
                     if (destinationIncludesRoute(targetState.destination, Route.Main)) {
-                        fadeOut(
-                            animationSpec = tween(
-                                durationMillis = Easing.exitDuration,
-                                easing = Easing.emphasizedAccelerate
-                            )
-                        ) + slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.End,
-                            animationSpec = tween(
-                                durationMillis = Easing.exitDuration,
-                                easing = Easing.emphasizedAccelerate
-                            )
-                        )
+                        fadeOut(Easing.exitTween())
                     } else {
-                        fadeOut()
+                        fadeOut(Easing.exitTween())
                     }
                 }
             ) {
@@ -132,7 +106,8 @@ fun AppNavHost() {
                     locationInfo = Json.decodeFromString(route.location),
                     goBack = {
                         navController.navigateUp()
-                    })
+                    }
+                )
             }
         }
     }

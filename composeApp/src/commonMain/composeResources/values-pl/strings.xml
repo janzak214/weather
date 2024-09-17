@@ -1,33 +1,15 @@
 <resources>
     <string name="app_name">Pogoda</string>
-    <string name="main_screen_title">Liczniki</string>
-    <string name="main_screen_create_button">Utwórz nowy licznik</string>
-    <string name="counter_edit_button">Edytuj</string>
-    <string name="counter_menu_more">Więcej</string>
-    <string name="counter_menu_delete">Usuń</string>
 
-    <string name="counter_dialog_delete_title">Usunąć licznik?</string>
-    <string name="counter_dialog_delete_text">Licznik „%1$s” zostanie usunięty</string>
-    <string name="counter_dialog_delete_confirm">Usuń</string>
-    <string name="counter_dialog_delete_cancel">Anuluj</string>
-
-    <string name="counter_dialog_edit_title">Edytuj nazwę licznika</string>
-    <string name="counter_dialog_edit_text_field_label">Nazwa licznika</string>
-    <string name="counter_dialog_edit_confirm">Zapisz</string>
-    <string name="counter_dialog_edit_cancel">Anuluj</string>
-
-    <string name="counter_dialog_create_title">Utwórz nowy licznik</string>
-    <string name="counter_dialog_create_text_field_label">Nazwa licznika</string>
-    <string name="counter_dialog_create_confirm">Utwórz</string>
-    <string name="counter_dialog_create_cancel">Anuluj</string>
-
-    <string name="weekday_abbreviation_1">pon.</string>
-    <string name="weekday_abbreviation_2">wt.</string>
-    <string name="weekday_abbreviation_3">śr.</string>
-    <string name="weekday_abbreviation_4">czw.</string>
-    <string name="weekday_abbreviation_5">pt.</string>
-    <string name="weekday_abbreviation_6">sob.</string>
-    <string name="weekday_abbreviation_7">niedz.</string>
+    <string-array name="weekday_abbreviations">
+        <item>pon.</item>
+        <item>wt.</item>
+        <item>śr.</item>
+        <item>czw.</item>
+        <item>pt.</item>
+        <item>sob.</item>
+        <item>niedz.</item>
+    </string-array>
 
     <string name="label_apparent_temperature">odczuwalna</string>
 

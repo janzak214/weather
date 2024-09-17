@@ -1,33 +1,15 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="main_screen_title">Counter app</string>
-    <string name="main_screen_create_button">Create a new counter</string>
-    <string name="counter_edit_button">Edit</string>
-    <string name="counter_menu_more">More</string>
-    <string name="counter_menu_delete">Delete</string>
 
-    <string name="counter_dialog_delete_title">Delete counter?</string>
-    <string name="counter_dialog_delete_text">The counter ‘%1$s’ will be permanently deleted</string>
-    <string name="counter_dialog_delete_confirm">Delete</string>
-    <string name="counter_dialog_delete_cancel">Cancel</string>
-
-    <string name="counter_dialog_edit_title">Edit counter name</string>
-    <string name="counter_dialog_edit_text_field_label">Counter name</string>
-    <string name="counter_dialog_edit_confirm">Save</string>
-    <string name="counter_dialog_edit_cancel">Cancel</string>
-
-    <string name="counter_dialog_create_title">Create a new counter</string>
-    <string name="counter_dialog_create_text_field_label">Counter name</string>
-    <string name="counter_dialog_create_confirm">Create</string>
-    <string name="counter_dialog_create_cancel">Cancel</string>
-
-    <string name="weekday_abbreviation_1">Mon</string>
-    <string name="weekday_abbreviation_2">Tue</string>
-    <string name="weekday_abbreviation_3">Wed</string>
-    <string name="weekday_abbreviation_4">Thu</string>
-    <string name="weekday_abbreviation_5">Fri</string>
-    <string name="weekday_abbreviation_6">Sat</string>
-    <string name="weekday_abbreviation_7">Sun</string>
+    <string-array name="weekday_abbreviations">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
 
     <string name="label_apparent_temperature">apparent</string>
 
