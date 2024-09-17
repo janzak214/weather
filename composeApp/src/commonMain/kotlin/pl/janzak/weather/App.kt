@@ -1,3 +1,5 @@
+package pl.janzak.weather
+
 import androidx.compose.runtime.Composable
 import pl.janzak.weather.navigation.AppNavHost
 import org.koin.dsl.module

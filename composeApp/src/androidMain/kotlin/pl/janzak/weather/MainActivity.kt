@@ -1,6 +1,5 @@
 package pl.janzak.weather
 
-import App
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import appModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

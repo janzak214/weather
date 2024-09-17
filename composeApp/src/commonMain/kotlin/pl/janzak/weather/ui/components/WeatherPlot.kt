@@ -31,8 +31,12 @@ import kotlinx.datetime.plus
 import pl.janzak.weather.model.WeatherCode
 import pl.janzak.weather.ui.util.Scale
 import kotlin.math.pow
+import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+
+private fun Offset.pixels(): Offset = Offset(round(x), round(y))
+private fun Size.pixels(): Size = Size(round(width), round(height))
 
 @Composable
 fun WeatherPlot(
@@ -50,6 +54,7 @@ fun WeatherPlot(
     val typography = MaterialTheme.typography
     val gridColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
     val lineColor = MaterialTheme.colorScheme.primary
+    val lineColorLight = lineColor.copy(alpha = 0.2f)
     val textColor = MaterialTheme.colorScheme.onBackground
     val iconColor = MaterialTheme.colorScheme.secondary
     val textMeasurer = rememberTextMeasurer(cacheSize = 200)
@@ -97,30 +102,30 @@ fun WeatherPlot(
                 val precipitationHeight = 60F * density
 
 
-                val temperatureStep = 2F
+                val temperatureStep = 1F
                 val temperatureScale = Scale(
                     minTemperature..maxTemperature,
                     0F..temperatureHeight,
                     mapRange = { range.endInclusive - it + temperatureOffset }
-                ).nice(temperatureStep)
-                val temperatureTicks = temperatureScale.ticks(temperatureStep)
+                ).nice(temperatureStep, maxCount = 8)
+                val temperatureTicks = temperatureScale.ticks(temperatureStep, maxCount = 8)
 
-                val precipitationStep = 2F
+                val precipitationStep = 1F
                 val precipitationScale = Scale(
                     minPrecipitation..maxPrecipitation,
                     0F..precipitationHeight,
                     mapRange = { range.endInclusive - it + precipitationOffset }
-                ).nice(precipitationStep)
-                val precipitationTicks = precipitationScale.ticks(precipitationStep)
+                ).nice(precipitationStep, maxCount = 5)
+                val precipitationTicks = precipitationScale.ticks(precipitationStep, maxCount = 5)
 
                 onDrawBehind {
                     inset(left = 30f * density, right = 0f, top = 0f, bottom = 0f) {
                         for (tick in temperatureTicks) {
-                            val yPosition = temperatureScale(tick)
+                            val yPosition = round(temperatureScale(tick))
                             drawLine(
                                 color = gridColor,
-                                start = Offset(0f, yPosition),
-                                Offset(this.size.width, yPosition)
+                                start = Offset(0f, yPosition).pixels(),
+                                end = Offset(this.size.width, yPosition).pixels(),
                             )
                         }
 
@@ -136,8 +141,14 @@ fun WeatherPlot(
                                 } * density
                                 drawLine(
                                     color = background,
-                                    start = Offset(xPosition - strokeWidth / 4, -1f * density),
-                                    end = Offset(xPosition - strokeWidth / 4, this.size.height),
+                                    start = Offset(
+                                        xPosition - strokeWidth / 4,
+                                        -1f * density
+                                    ).pixels(),
+                                    end = Offset(
+                                        xPosition - strokeWidth / 4,
+                                        this.size.height
+                                    ).pixels(),
                                     strokeWidth = strokeWidth
                                 )
 
@@ -192,13 +203,13 @@ fun WeatherPlot(
                             }
 
 
-                            drawPath(upperLine, color = lineColor.copy(alpha = 0.2f))
+                            drawPath(upperLine, color = lineColorLight)
                             drawPoints(
                                 mean.mapIndexed { hour, value ->
                                     Offset(
                                         timeScale(hour.toFloat()),
                                         temperatureScale(value.toFloat())
-                                    )
+                                    ).pixels()
                                 },
                                 pointMode = PointMode.Polygon,
                                 cap = StrokeCap.Round,
@@ -215,7 +226,7 @@ fun WeatherPlot(
                                                 Offset(
                                                     timeScale(hour.toFloat()),
                                                     temperatureScale(value.toFloat())
-                                                )
+                                                ).pixels()
                                             },
                                             pointMode = PointMode.Polygon,
                                             cap = StrokeCap.Round,
@@ -244,30 +255,35 @@ fun WeatherPlot(
                             val offset = -width / 2
 
                             mean.mapIndexed { index, precipitation ->
-                                if (precipitation > 1.0) {
+                                if (precipitation > 0.0) {
                                     val xPosition = timeScale(index.toFloat())
                                     val yPosition = precipitationScale(precipitation.toFloat())
+                                    val yPosition2 =
+                                        precipitationScale(precipitation.toFloat() + stddev[index].toFloat())
+
+
+                                    drawRect(
+                                        lineColorLight,
+                                        topLeft = Offset(
+                                            xPosition + offset,
+                                            yPosition2
+                                        ).pixels(),
+                                        size = Size(
+                                            width = width,
+                                            height = precipitationHeight + precipitationOffset - yPosition2
+                                        ).pixels()
+                                    )
 
                                     drawRect(
                                         lineColor,
                                         topLeft = Offset(
                                             xPosition + offset,
                                             yPosition
-                                        ),
+                                        ).pixels(),
                                         size = Size(
                                             width = width,
                                             height = precipitationHeight + precipitationOffset - yPosition
-                                        )
-                                    )
-
-                                    val yPosition2 =
-                                        precipitationScale(precipitation.toFloat() + stddev[index].toFloat())
-
-                                    drawLine(
-                                        lineColor,
-                                        start = Offset(xPosition + offset, yPosition2),
-                                        end = Offset(xPosition + offset + width, yPosition2),
-                                        strokeWidth = density,
+                                        ).pixels()
                                     )
                                 }
                             }
@@ -287,11 +303,11 @@ fun WeatherPlot(
                                             topLeft = Offset(
                                                 xPosition + offset,
                                                 yPosition
-                                            ),
+                                            ).pixels(),
                                             size = Size(
                                                 width = barWidth,
                                                 height = precipitationHeight + precipitationOffset - yPosition
-                                            )
+                                            ).pixels()
                                         )
                                     }
                                 }
@@ -308,7 +324,7 @@ fun WeatherPlot(
                                     topLeft = Offset(
                                         xPosition - layoutResult.size.width / 2,
                                         size.height - layoutResult.size.height
-                                    ),
+                                    ).pixels(),
                                 )
                             }
 
@@ -332,7 +348,7 @@ fun WeatherPlot(
                                     topLeft = Offset(
                                         xPosition - layoutResult.size.width,
                                         size.height - layoutResult.size.height - 30f * density
-                                    ),
+                                    ).pixels(),
                                 )
                             }
                         }
@@ -345,11 +361,11 @@ fun WeatherPlot(
                                 1f to Color.Transparent,
                                 endX = 30f * density
                             ),
-                            topLeft = Offset(x = -30f * density, y = -15f * density),
+                            topLeft = Offset(x = -30f * density, y = -15f * density).pixels(),
                             size = Size(
                                 width = 60f * density,
                                 height = size.height + 30f * density
-                            )
+                            ).pixels()
                         )
 
                         for (temperature in temperatureTicks) {
@@ -363,7 +379,7 @@ fun WeatherPlot(
                                 topLeft = Offset(
                                     xPosition - tempLayoutResult.size.width / 2,
                                     yPosition - tempLayoutResult.size.height / 2,
-                                ),
+                                ).pixels(),
                             )
                         }
 
@@ -378,7 +394,7 @@ fun WeatherPlot(
                                 topLeft = Offset(
                                     xPosition - tempLayoutResult.size.width / 2,
                                     yPosition - tempLayoutResult.size.height / 2,
-                                ),
+                                ).pixels(),
                             )
                         }
                     }

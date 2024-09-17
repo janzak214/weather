@@ -152,7 +152,6 @@ android {
     }
     dependencies {
         debugImplementation(compose.uiTooling)
-//        debugImplementation(libs.androidx.ui.tooling)
     }
 }
 
